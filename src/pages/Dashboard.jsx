@@ -155,10 +155,10 @@ const Dashboard = () => {
   }, [orders])
 
   const statCards = [
-    { label: 'Total Orders',  value: stats.total,       icon: ShoppingBag,  color: '#6366f1', delta: 12 },
+    { label: 'Total Orders',  value: stats.total,       icon: ShoppingBag,  color: '#6366f1',  },
     { label: 'Pending',       value: stats.pending,     icon: Clock,        color: '#f59e0b' },
     { label: 'In Progress',   value: stats.in_progress, icon: Loader2,      color: '#3b82f6' },
-    { label: 'Completed',     value: stats.completed,   icon: CheckCircle2, color: '#10b981', delta: 8 },
+    { label: 'Completed',     value: stats.completed,   icon: CheckCircle2, color: '#10b981',  },
     { label: 'Cancelled',     value: stats.cancelled,   icon: XCircle,      color: '#ef4444' },
   ]
 
