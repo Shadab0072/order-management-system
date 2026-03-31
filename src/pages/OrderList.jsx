@@ -71,11 +71,11 @@ const OrderRow = ({ order, isDark, onView, onEdit, onCancel }) => {
       <td className="px-4 py-3.5">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            {order.customerName.charAt(0)}
+            {order.customerName ? order.customerName.charAt(0) : '?'}
           </div>
           <div>
-            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{order.customerName}</p>
-            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{order.customerEmail}</p>
+            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{order.customerName || 'Unknown Customer'}</p>
+            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{order.customerEmail || 'No email provided'}</p>
           </div>
         </div>
       </td>

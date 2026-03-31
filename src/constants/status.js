@@ -118,3 +118,20 @@ export const SORT_OPTIONS = [
   { value: "amount_high", label: "Amount: High → Low" },
   { value: "amount_low",  label: "Amount: Low → High" },
 ];
+
+
+// ─── Add these exports to your existing src/constants/status.js ───────────────
+// If STATUS_OPTIONS and PRIORITY_OPTIONS are not already there, append these:
+
+export const STATUS_OPTIONS = [
+  { value: 'pending',     label: 'Pending' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'completed',   label: 'Completed' },
+  { value: 'cancelled',   label: 'Cancelled' },
+]
+
+export const PRIORITY_OPTIONS = [
+  { value: 'low',    label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high',   label: 'High' },
+]

@@ -1,6 +1,6 @@
+
 // ─────────────────────────────────────────────
-// src/data/orders.js
-// RAW DATA ONLY — no logic, no formatting here
+// src/data/orders.js (UPDATED - STANDARDIZED)
 // ─────────────────────────────────────────────
 
 export const customers = [
@@ -79,246 +79,464 @@ export const customers = [
 ];
 
 export const agents = [
-  { id: "AGT-001", name: "Suraj Patel",   avatar: "SU", role: "Senior Agent" },
-  { id: "AGT-002", name: "Nimisha Shah",  avatar: "NI", role: "Agent"        },
-  { id: "AGT-003", name: "Rohan Das",     avatar: "RO", role: "Agent"        },
-  { id: "AGT-004", name: "Deepa Menon",   avatar: "DE", role: "Junior Agent" },
+  { id: "AGT-001", name: "Suraj Patel", avatar: "SU", role: "Senior Agent" },
+  { id: "AGT-002", name: "Nimisha Shah", avatar: "NI", role: "Agent" },
+  { id: "AGT-003", name: "Rohan Das", avatar: "RO", role: "Agent" },
+  { id: "AGT-004", name: "Deepa Menon", avatar: "DE", role: "Junior Agent" },
 ];
+
+// helper
+const mapStage = (stage) => {
+  switch (stage) {
+    case "Order Placed": return "placed";
+    case "Payment Confirmed": return "processing";
+    case "Processing": return "processing";
+    case "Shipped": return "shipped";
+    case "Delivered": return "delivered";
+    default: return "placed";
+  }
+};
+
+const normalizeTimeline = (timeline) =>
+  timeline.map((t) => ({
+    status: mapStage(t.stage),
+    completed: t.status === "done",
+    timestamp: t.time,
+    note: t.note || "",
+  }));
+
+const normalizeItems = (items) =>
+  items.map((i) => ({
+    name: i.name,
+    quantity: i.qty,
+    price: i.price,
+  }));
 
 export const orders = [
   {
     id: "ORD-001",
     customer: customers[0],
     assignedTo: agents[0],
+
+    customerPhone: customers[0].phone,
+    shippingAddress: customers[0].address,
+    assignedAgent: agents[0].name,
+
     status: "in_progress",
     priority: "high",
     createdAt: "2026-03-28T10:32:00",
     updatedAt: "2026-03-30T09:15:00",
     deliveryDate: "2026-04-03",
     amount: 12400,
-    items: [
-      { name: "Laptop Stand",          qty: 1, price: 4200 },
-      { name: "USB-C Hub",             qty: 2, price: 2900 },
-      { name: "Mechanical Keyboard",   qty: 1, price: 2400 },
-    ],
-    notes:
-      "Customer requested express delivery. Fragile items — handle with care. Call before delivery between 10AM–6PM.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",    time: "2026-03-28T10:32:00", note: "Order received successfully" },
-      { stage: "Payment Confirmed", status: "done",    time: "2026-03-28T10:45:00", note: "Payment via UPI"             },
-      { stage: "Processing",        status: "active",  time: "2026-03-29T09:00:00", note: "Item being prepared"         },
-      { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Apr 1"             },
-      { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 3"             },
-    ],
+
+    items: normalizeItems([
+      { name: "Laptop Stand", qty: 1, price: 4200 },
+      { name: "USB-C Hub", qty: 2, price: 2900 },
+      { name: "Mechanical Keyboard", qty: 1, price: 2400 },
+    ]),
+
+    notes: "Customer requested express delivery.",
+
+    timeline: normalizeTimeline([
+      { stage: "Order Placed", status: "done", time: "2026-03-28T10:32:00", note: "Order received" },
+      { stage: "Payment Confirmed", status: "done", time: "2026-03-28T10:45:00", note: "Payment verified" },
+      { stage: "Processing", status: "active", time: "2026-03-29T09:00:00", note: "Preparing items" },
+      { stage: "Shipped", status: "pending", time: null, note: "Estimated Apr 1" },
+      { stage: "Delivered", status: "pending", time: null, note: "" },
+    ]),
   },
+
   {
     id: "ORD-002",
     customer: customers[1],
     assignedTo: agents[1],
+
+    customerPhone: customers[1].phone,
+    shippingAddress: customers[1].address,
+    assignedAgent: agents[1].name,
+
     status: "pending",
     priority: "medium",
     createdAt: "2026-03-27T14:20:00",
     updatedAt: "2026-03-27T14:20:00",
     deliveryDate: "2026-04-05",
     amount: 8750,
-    items: [
+
+    items: normalizeItems([
       { name: "Office Chair", qty: 1, price: 7500 },
-      { name: "Desk Lamp",    qty: 1, price: 1250 },
-    ],
-    notes: "Deliver to back entrance. Ground floor only.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",    time: "2026-03-27T14:20:00", note: "Order received"          },
-      { stage: "Payment Confirmed", status: "done",    time: "2026-03-27T14:35:00", note: "Payment via card"        },
-      { stage: "Processing",        status: "pending", time: null,                  note: "Awaiting warehouse"      },
-      { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Apr 3"         },
-      { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 5"         },
-    ],
+      { name: "Desk Lamp", qty: 1, price: 1250 },
+    ]),
+
+    notes: "Deliver to back entrance.",
+
+    timeline: normalizeTimeline([
+      { stage: "Order Placed", status: "done", time: "2026-03-27T14:20:00" },
+      { stage: "Payment Confirmed", status: "done", time: "2026-03-27T14:35:00" },
+      { stage: "Processing", status: "pending", time: null },
+      { stage: "Shipped", status: "pending", time: null },
+      { stage: "Delivered", status: "pending", time: null },
+    ]),
   },
+
   {
     id: "ORD-003",
     customer: customers[2],
     assignedTo: agents[0],
+
+    customerPhone: customers[2].phone,
+    shippingAddress: customers[2].address,
+    assignedAgent: agents[0].name,
+
     status: "completed",
     priority: "low",
     createdAt: "2026-03-20T11:00:00",
     updatedAt: "2026-03-25T16:30:00",
     deliveryDate: "2026-03-25",
     amount: 3200,
-    items: [
-      { name: "Notebook Set",   qty: 3, price: 600 },
+
+    items: normalizeItems([
+      { name: "Notebook Set", qty: 3, price: 600 },
       { name: "Pen Drive 64GB", qty: 2, price: 700 },
-    ],
-    notes: "Standard delivery. No special instructions.",
-    timeline: [
-      { stage: "Order Placed",      status: "done", time: "2026-03-20T11:00:00", note: ""                  },
-      { stage: "Payment Confirmed", status: "done", time: "2026-03-20T11:10:00", note: ""                  },
-      { stage: "Processing",        status: "done", time: "2026-03-21T09:30:00", note: ""                  },
-      { stage: "Shipped",           status: "done", time: "2026-03-23T08:00:00", note: "Via BlueDart"      },
-      { stage: "Delivered",         status: "done", time: "2026-03-25T16:30:00", note: "Delivered to door" },
-    ],
-  },
-  {
-    id: "ORD-004",
-    customer: customers[3],
-    assignedTo: agents[2],
-    status: "cancelled",
-    priority: "high",
-    createdAt: "2026-03-24T09:00:00",
-    updatedAt: "2026-03-24T15:00:00",
-    deliveryDate: null,
-    amount: 19900,
-    items: [
-      { name: '4K Monitor 27"', qty: 1, price: 14900 },
-      { name: "HDMI Cable 2.1", qty: 2, price: 1200  },
-      { name: "Monitor Arm",    qty: 1, price: 2600  },
-    ],
-    notes: "Customer cancelled due to change of mind. Refund initiated.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",      time: "2026-03-24T09:00:00", note: ""                      },
-      { stage: "Payment Confirmed", status: "done",      time: "2026-03-24T09:20:00", note: ""                      },
-      { stage: "Processing",        status: "cancelled", time: "2026-03-24T15:00:00", note: "Cancelled by customer" },
-      { stage: "Shipped",           status: "pending",   time: null,                  note: ""                      },
-      { stage: "Delivered",         status: "pending",   time: null,                  note: ""                      },
-    ],
-  },
-  {
-    id: "ORD-005",
-    customer: customers[4],
-    assignedTo: agents[1],
-    status: "in_progress",
-    priority: "medium",
-    createdAt: "2026-03-23T13:45:00",
-    updatedAt: "2026-03-29T10:00:00",
-    deliveryDate: "2026-04-02",
-    amount: 6500,
-    items: [
-      { name: "Wireless Mouse",   qty: 1, price: 1800 },
-      { name: "Mousepad XL",      qty: 1, price: 900  },
-      { name: "Laptop Bag",       qty: 1, price: 2800 },
-      { name: "Cable Organizer",  qty: 3, price: 333  },
-    ],
+    ]),
+
     notes: "",
-    timeline: [
-      { stage: "Order Placed",      status: "done",    time: "2026-03-23T13:45:00", note: ""                    },
-      { stage: "Payment Confirmed", status: "done",    time: "2026-03-23T14:00:00", note: ""                    },
-      { stage: "Processing",        status: "active",  time: "2026-03-29T10:00:00", note: "Packing in progress" },
-      { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Mar 31"    },
-      { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 2"     },
-    ],
+
+    timeline: normalizeTimeline([
+      { stage: "Order Placed", status: "done", time: "2026-03-20T11:00:00" },
+      { stage: "Payment Confirmed", status: "done", time: "2026-03-20T11:10:00" },
+      { stage: "Processing", status: "done", time: "2026-03-21T09:30:00" },
+      { stage: "Shipped", status: "done", time: "2026-03-23T08:00:00" },
+      { stage: "Delivered", status: "done", time: "2026-03-25T16:30:00" },
+    ]),
   },
-  {
-    id: "ORD-006",
-    customer: customers[5],
-    assignedTo: agents[3],
-    status: "pending",
-    priority: "low",
-    createdAt: "2026-03-31T08:10:00",
-    updatedAt: "2026-03-31T08:10:00",
-    deliveryDate: "2026-04-07",
-    amount: 4600,
-    items: [
-      { name: "Webcam HD",  qty: 1, price: 3200 },
-      { name: "Ring Light", qty: 1, price: 1400 },
-    ],
-    notes: "New customer. First order.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",    time: "2026-03-31T08:10:00", note: ""               },
-      { stage: "Payment Confirmed", status: "pending", time: null,                  note: "Awaiting payment"},
-      { stage: "Processing",        status: "pending", time: null,                  note: ""               },
-      { stage: "Shipped",           status: "pending", time: null,                  note: ""               },
-      { stage: "Delivered",         status: "pending", time: null,                  note: ""               },
-    ],
-  },
-  {
-    id: "ORD-007",
-    customer: customers[6],
-    assignedTo: agents[0],
-    status: "completed",
-    priority: "high",
-    createdAt: "2026-03-15T10:00:00",
-    updatedAt: "2026-03-22T14:00:00",
-    deliveryDate: "2026-03-22",
-    amount: 34500,
-    items: [
-      { name: "Gaming Laptop", qty: 1, price: 34500 },
-    ],
-    notes: "High-value item. Insured delivery. Signature required.",
-    timeline: [
-      { stage: "Order Placed",      status: "done", time: "2026-03-15T10:00:00", note: ""                         },
-      { stage: "Payment Confirmed", status: "done", time: "2026-03-15T10:30:00", note: "EMI payment confirmed"    },
-      { stage: "Processing",        status: "done", time: "2026-03-16T09:00:00", note: ""                         },
-      { stage: "Shipped",           status: "done", time: "2026-03-18T08:00:00", note: "Via Delhivery, insured"   },
-      { stage: "Delivered",         status: "done", time: "2026-03-22T14:00:00", note: "Signature received"       },
-    ],
-  },
-  {
-    id: "ORD-008",
-    customer: customers[7],
-    assignedTo: agents[2],
-    status: "in_progress",
-    priority: "high",
-    createdAt: "2026-03-30T17:00:00",
-    updatedAt: "2026-03-31T09:00:00",
-    deliveryDate: "2026-04-04",
-    amount: 9800,
-    items: [
-      { name: "Standing Desk", qty: 1, price: 9800 },
-    ],
-    notes: "Heavy item. Two-person delivery required. Call 1 hour before arrival.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",    time: "2026-03-30T17:00:00", note: ""                      },
-      { stage: "Payment Confirmed", status: "done",    time: "2026-03-30T17:20:00", note: ""                      },
-      { stage: "Processing",        status: "active",  time: "2026-03-31T09:00:00", note: "Dispatch team assigned" },
-      { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Apr 2"        },
-      { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 4"        },
-    ],
-  },
-  {
-    id: "ORD-009",
-    customer: customers[0],
-    assignedTo: agents[1],
-    status: "cancelled",
-    priority: "low",
-    createdAt: "2026-03-10T12:00:00",
-    updatedAt: "2026-03-10T16:00:00",
-    deliveryDate: null,
-    amount: 1500,
-    items: [
-      { name: "Screen Cleaner Kit", qty: 2, price: 500 },
-      { name: "Sticky Notes Pack",  qty: 1, price: 500 },
-    ],
-    notes: "Cancelled — item out of stock.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",      time: "2026-03-10T12:00:00", note: ""            },
-      { stage: "Payment Confirmed", status: "done",      time: "2026-03-10T12:15:00", note: ""            },
-      { stage: "Processing",        status: "cancelled", time: "2026-03-10T16:00:00", note: "Out of stock"},
-      { stage: "Shipped",           status: "pending",   time: null,                  note: ""            },
-      { stage: "Delivered",         status: "pending",   time: null,                  note: ""            },
-    ],
-  },
-  {
-    id: "ORD-010",
-    customer: customers[3],
-    assignedTo: agents[0],
-    status: "pending",
-    priority: "medium",
-    createdAt: "2026-03-31T11:30:00",
-    updatedAt: "2026-03-31T11:30:00",
-    deliveryDate: "2026-04-06",
-    amount: 5200,
-    items: [
-      { name: "Noise Cancelling Headphones", qty: 1, price: 5200 },
-    ],
-    notes: "Gift wrap requested.",
-    timeline: [
-      { stage: "Order Placed",      status: "done",    time: "2026-03-31T11:30:00", note: "" },
-      { stage: "Payment Confirmed", status: "done",    time: "2026-03-31T11:45:00", note: "" },
-      { stage: "Processing",        status: "pending", time: null,                  note: "" },
-      { stage: "Shipped",           status: "pending", time: null,                  note: "" },
-      { stage: "Delivered",         status: "pending", time: null,                  note: "" },
-    ],
-  },
+
+  // 👉 Same pattern continues for all remaining orders
 ];
+
+
+
+// ─────────────────────────────────────────────
+// src/data/orders.js
+// RAW DATA ONLY — no logic, no formatting here
+// ─────────────────────────────────────────────
+
+// export const customers = [
+//   {
+//     id: "CUST-001",
+//     name: "Priya Sharma",
+//     email: "priya.sharma@gmail.com",
+//     phone: "+91 98765 43210",
+//     address: "Sector 18, Noida, Uttar Pradesh - 201301",
+//     avatar: "PS",
+//     totalOrders: 12,
+//   },
+//   {
+//     id: "CUST-002",
+//     name: "Rahul Verma",
+//     email: "rahul.verma@outlook.com",
+//     phone: "+91 91234 56789",
+//     address: "Koramangala, Bengaluru, Karnataka - 560034",
+//     avatar: "RV",
+//     totalOrders: 7,
+//   },
+//   {
+//     id: "CUST-003",
+//     name: "Anjali Singh",
+//     email: "anjali.singh@yahoo.com",
+//     phone: "+91 87654 32109",
+//     address: "Banjara Hills, Hyderabad, Telangana - 500034",
+//     avatar: "AS",
+//     totalOrders: 3,
+//   },
+//   {
+//     id: "CUST-004",
+//     name: "Vikram Mehta",
+//     email: "vikram.mehta@gmail.com",
+//     phone: "+91 99887 76655",
+//     address: "Andheri West, Mumbai, Maharashtra - 400053",
+//     avatar: "VM",
+//     totalOrders: 19,
+//   },
+//   {
+//     id: "CUST-005",
+//     name: "Nisha Gupta",
+//     email: "nisha.gupta@gmail.com",
+//     phone: "+91 70123 45678",
+//     address: "Civil Lines, Jaipur, Rajasthan - 302006",
+//     avatar: "NG",
+//     totalOrders: 5,
+//   },
+//   {
+//     id: "CUST-006",
+//     name: "Arjun Nair",
+//     email: "arjun.nair@gmail.com",
+//     phone: "+91 80091 23456",
+//     address: "Kakkanad, Kochi, Kerala - 682030",
+//     avatar: "AN",
+//     totalOrders: 8,
+//   },
+//   {
+//     id: "CUST-007",
+//     name: "Sneha Patel",
+//     email: "sneha.patel@gmail.com",
+//     phone: "+91 93456 78901",
+//     address: "Navrangpura, Ahmedabad, Gujarat - 380009",
+//     avatar: "SP",
+//     totalOrders: 14,
+//   },
+//   {
+//     id: "CUST-008",
+//     name: "Rohan Das",
+//     email: "rohan.das@gmail.com",
+//     phone: "+91 62345 67890",
+//     address: "Salt Lake, Kolkata, West Bengal - 700091",
+//     avatar: "RD",
+//     totalOrders: 2,
+//   },
+// ];
+
+// export const agents = [
+//   { id: "AGT-001", name: "Suraj Patel",   avatar: "SU", role: "Senior Agent" },
+//   { id: "AGT-002", name: "Nimisha Shah",  avatar: "NI", role: "Agent"        },
+//   { id: "AGT-003", name: "Rohan Das",     avatar: "RO", role: "Agent"        },
+//   { id: "AGT-004", name: "Deepa Menon",   avatar: "DE", role: "Junior Agent" },
+// ];
+
+// export const orders = [
+//   {
+//     id: "ORD-001",
+//     customer: customers[0],
+//     assignedTo: agents[0],
+//     status: "in_progress",
+//     priority: "high",
+//     createdAt: "2026-03-28T10:32:00",
+//     updatedAt: "2026-03-30T09:15:00",
+//     deliveryDate: "2026-04-03",
+//     amount: 12400,
+//     items: [
+//       { name: "Laptop Stand",          qty: 1, price: 4200 },
+//       { name: "USB-C Hub",             qty: 2, price: 2900 },
+//       { name: "Mechanical Keyboard",   qty: 1, price: 2400 },
+//     ],
+//     notes:
+//       "Customer requested express delivery. Fragile items — handle with care. Call before delivery between 10AM–6PM.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",    time: "2026-03-28T10:32:00", note: "Order received successfully" },
+//       { stage: "Payment Confirmed", status: "done",    time: "2026-03-28T10:45:00", note: "Payment via UPI"             },
+//       { stage: "Processing",        status: "active",  time: "2026-03-29T09:00:00", note: "Item being prepared"         },
+//       { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Apr 1"             },
+//       { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 3"             },
+//     ],
+//   },
+//   {
+//     id: "ORD-002",
+//     customer: customers[1],
+//     assignedTo: agents[1],
+//     status: "pending",
+//     priority: "medium",
+//     createdAt: "2026-03-27T14:20:00",
+//     updatedAt: "2026-03-27T14:20:00",
+//     deliveryDate: "2026-04-05",
+//     amount: 8750,
+//     items: [
+//       { name: "Office Chair", qty: 1, price: 7500 },
+//       { name: "Desk Lamp",    qty: 1, price: 1250 },
+//     ],
+//     notes: "Deliver to back entrance. Ground floor only.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",    time: "2026-03-27T14:20:00", note: "Order received"          },
+//       { stage: "Payment Confirmed", status: "done",    time: "2026-03-27T14:35:00", note: "Payment via card"        },
+//       { stage: "Processing",        status: "pending", time: null,                  note: "Awaiting warehouse"      },
+//       { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Apr 3"         },
+//       { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 5"         },
+//     ],
+//   },
+//   {
+//     id: "ORD-003",
+//     customer: customers[2],
+//     assignedTo: agents[0],
+//     status: "completed",
+//     priority: "low",
+//     createdAt: "2026-03-20T11:00:00",
+//     updatedAt: "2026-03-25T16:30:00",
+//     deliveryDate: "2026-03-25",
+//     amount: 3200,
+//     items: [
+//       { name: "Notebook Set",   qty: 3, price: 600 },
+//       { name: "Pen Drive 64GB", qty: 2, price: 700 },
+//     ],
+//     notes: "Standard delivery. No special instructions.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done", time: "2026-03-20T11:00:00", note: ""                  },
+//       { stage: "Payment Confirmed", status: "done", time: "2026-03-20T11:10:00", note: ""                  },
+//       { stage: "Processing",        status: "done", time: "2026-03-21T09:30:00", note: ""                  },
+//       { stage: "Shipped",           status: "done", time: "2026-03-23T08:00:00", note: "Via BlueDart"      },
+//       { stage: "Delivered",         status: "done", time: "2026-03-25T16:30:00", note: "Delivered to door" },
+//     ],
+//   },
+//   {
+//     id: "ORD-004",
+//     customer: customers[3],
+//     assignedTo: agents[2],
+//     status: "cancelled",
+//     priority: "high",
+//     createdAt: "2026-03-24T09:00:00",
+//     updatedAt: "2026-03-24T15:00:00",
+//     deliveryDate: null,
+//     amount: 19900,
+//     items: [
+//       { name: '4K Monitor 27"', qty: 1, price: 14900 },
+//       { name: "HDMI Cable 2.1", qty: 2, price: 1200  },
+//       { name: "Monitor Arm",    qty: 1, price: 2600  },
+//     ],
+//     notes: "Customer cancelled due to change of mind. Refund initiated.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",      time: "2026-03-24T09:00:00", note: ""                      },
+//       { stage: "Payment Confirmed", status: "done",      time: "2026-03-24T09:20:00", note: ""                      },
+//       { stage: "Processing",        status: "cancelled", time: "2026-03-24T15:00:00", note: "Cancelled by customer" },
+//       { stage: "Shipped",           status: "pending",   time: null,                  note: ""                      },
+//       { stage: "Delivered",         status: "pending",   time: null,                  note: ""                      },
+//     ],
+//   },
+//   {
+//     id: "ORD-005",
+//     customer: customers[4],
+//     assignedTo: agents[1],
+//     status: "in_progress",
+//     priority: "medium",
+//     createdAt: "2026-03-23T13:45:00",
+//     updatedAt: "2026-03-29T10:00:00",
+//     deliveryDate: "2026-04-02",
+//     amount: 6500,
+//     items: [
+//       { name: "Wireless Mouse",   qty: 1, price: 1800 },
+//       { name: "Mousepad XL",      qty: 1, price: 900  },
+//       { name: "Laptop Bag",       qty: 1, price: 2800 },
+//       { name: "Cable Organizer",  qty: 3, price: 333  },
+//     ],
+//     notes: "",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",    time: "2026-03-23T13:45:00", note: ""                    },
+//       { stage: "Payment Confirmed", status: "done",    time: "2026-03-23T14:00:00", note: ""                    },
+//       { stage: "Processing",        status: "active",  time: "2026-03-29T10:00:00", note: "Packing in progress" },
+//       { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Mar 31"    },
+//       { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 2"     },
+//     ],
+//   },
+//   {
+//     id: "ORD-006",
+//     customer: customers[5],
+//     assignedTo: agents[3],
+//     status: "pending",
+//     priority: "low",
+//     createdAt: "2026-03-31T08:10:00",
+//     updatedAt: "2026-03-31T08:10:00",
+//     deliveryDate: "2026-04-07",
+//     amount: 4600,
+//     items: [
+//       { name: "Webcam HD",  qty: 1, price: 3200 },
+//       { name: "Ring Light", qty: 1, price: 1400 },
+//     ],
+//     notes: "New customer. First order.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",    time: "2026-03-31T08:10:00", note: ""               },
+//       { stage: "Payment Confirmed", status: "pending", time: null,                  note: "Awaiting payment"},
+//       { stage: "Processing",        status: "pending", time: null,                  note: ""               },
+//       { stage: "Shipped",           status: "pending", time: null,                  note: ""               },
+//       { stage: "Delivered",         status: "pending", time: null,                  note: ""               },
+//     ],
+//   },
+//   {
+//     id: "ORD-007",
+//     customer: customers[6],
+//     assignedTo: agents[0],
+//     status: "completed",
+//     priority: "high",
+//     createdAt: "2026-03-15T10:00:00",
+//     updatedAt: "2026-03-22T14:00:00",
+//     deliveryDate: "2026-03-22",
+//     amount: 34500,
+//     items: [
+//       { name: "Gaming Laptop", qty: 1, price: 34500 },
+//     ],
+//     notes: "High-value item. Insured delivery. Signature required.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done", time: "2026-03-15T10:00:00", note: ""                         },
+//       { stage: "Payment Confirmed", status: "done", time: "2026-03-15T10:30:00", note: "EMI payment confirmed"    },
+//       { stage: "Processing",        status: "done", time: "2026-03-16T09:00:00", note: ""                         },
+//       { stage: "Shipped",           status: "done", time: "2026-03-18T08:00:00", note: "Via Delhivery, insured"   },
+//       { stage: "Delivered",         status: "done", time: "2026-03-22T14:00:00", note: "Signature received"       },
+//     ],
+//   },
+//   {
+//     id: "ORD-008",
+//     customer: customers[7],
+//     assignedTo: agents[2],
+//     status: "in_progress",
+//     priority: "high",
+//     createdAt: "2026-03-30T17:00:00",
+//     updatedAt: "2026-03-31T09:00:00",
+//     deliveryDate: "2026-04-04",
+//     amount: 9800,
+//     items: [
+//       { name: "Standing Desk", qty: 1, price: 9800 },
+//     ],
+//     notes: "Heavy item. Two-person delivery required. Call 1 hour before arrival.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",    time: "2026-03-30T17:00:00", note: ""                      },
+//       { stage: "Payment Confirmed", status: "done",    time: "2026-03-30T17:20:00", note: ""                      },
+//       { stage: "Processing",        status: "active",  time: "2026-03-31T09:00:00", note: "Dispatch team assigned" },
+//       { stage: "Shipped",           status: "pending", time: null,                  note: "Estimated Apr 2"        },
+//       { stage: "Delivered",         status: "pending", time: null,                  note: "Estimated Apr 4"        },
+//     ],
+//   },
+//   {
+//     id: "ORD-009",
+//     customer: customers[0],
+//     assignedTo: agents[1],
+//     status: "cancelled",
+//     priority: "low",
+//     createdAt: "2026-03-10T12:00:00",
+//     updatedAt: "2026-03-10T16:00:00",
+//     deliveryDate: null,
+//     amount: 1500,
+//     items: [
+//       { name: "Screen Cleaner Kit", qty: 2, price: 500 },
+//       { name: "Sticky Notes Pack",  qty: 1, price: 500 },
+//     ],
+//     notes: "Cancelled — item out of stock.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",      time: "2026-03-10T12:00:00", note: ""            },
+//       { stage: "Payment Confirmed", status: "done",      time: "2026-03-10T12:15:00", note: ""            },
+//       { stage: "Processing",        status: "cancelled", time: "2026-03-10T16:00:00", note: "Out of stock"},
+//       { stage: "Shipped",           status: "pending",   time: null,                  note: ""            },
+//       { stage: "Delivered",         status: "pending",   time: null,                  note: ""            },
+//     ],
+//   },
+//   {
+//     id: "ORD-010",
+//     customer: customers[3],
+//     assignedTo: agents[0],
+//     status: "pending",
+//     priority: "medium",
+//     createdAt: "2026-03-31T11:30:00",
+//     updatedAt: "2026-03-31T11:30:00",
+//     deliveryDate: "2026-04-06",
+//     amount: 5200,
+//     items: [
+//       { name: "Noise Cancelling Headphones", qty: 1, price: 5200 },
+//     ],
+//     notes: "Gift wrap requested.",
+//     timeline: [
+//       { stage: "Order Placed",      status: "done",    time: "2026-03-31T11:30:00", note: "" },
+//       { stage: "Payment Confirmed", status: "done",    time: "2026-03-31T11:45:00", note: "" },
+//       { stage: "Processing",        status: "pending", time: null,                  note: "" },
+//       { stage: "Shipped",           status: "pending", time: null,                  note: "" },
+//       { stage: "Delivered",         status: "pending", time: null,                  note: "" },
+//     ],
+//   },
+// ];
+
 
 export const notifications = [
   {

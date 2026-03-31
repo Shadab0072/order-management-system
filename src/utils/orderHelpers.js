@@ -75,59 +75,79 @@ export const searchOrders = (orders, query) => {
       order.customer.email.toLowerCase().includes(q)
   );
 };
+// ─── Add to src/utils/orderHelpers.js if not already present ─────────────────
 
 /**
- * Sort orders by different criteria.
- * Returns a NEW array — does not mutate the original.
- * @param {Array}  orders
- * @param {string} sortBy - "newest" | "oldest" | "amount_high" | "amount_low"
+ * Applies all active filters to an orders array.
+ * @param {Array} orders
+ * @param {{ search, status, priority, dateFrom, dateTo }} filters
  */
-export const sortOrders = (orders, sortBy) => {
-  const copy = [...orders];
+export const applyAllFilters = (orders, filters) => {
+  let result = [...orders]
 
-  switch (sortBy) {
-    case "oldest":
-      return copy.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
-    case "amount_high":
-      return copy.sort((a, b) => b.amount - a.amount);
-
-    case "amount_low":
-      return copy.sort((a, b) => a.amount - b.amount);
-
-    case "newest":
-    default:
-      return copy.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (filters.search) {
+    const q = filters.search.toLowerCase()
+    result = result.filter(
+      (o) =>
+        o.orderId?.toLowerCase().includes(q) ||
+        o.customerName?.toLowerCase().includes(q) ||
+        o.customerEmail?.toLowerCase().includes(q)
+    )
   }
-};
+
+  if (filters.status) {
+    result = result.filter((o) => o.status === filters.status)
+  }
+
+  if (filters.priority) {
+    result = result.filter((o) => o.priority === filters.priority)
+  }
+
+  if (filters.dateFrom) {
+    const from = new Date(filters.dateFrom)
+    result = result.filter((o) => new Date(o.createdAt) >= from)
+  }
+
+  if (filters.dateTo) {
+    const to = new Date(filters.dateTo)
+    to.setHours(23, 59, 59, 999) // include the full end day
+    result = result.filter((o) => new Date(o.createdAt) <= to)
+  }
+
+  return result
+}
 
 /**
- * Apply all active filters + search + sort in one call.
- * This is what the OrderList page should call.
- *
- * @param {Array}  orders     - full orders array from data/orders.js
- * @param {Object} filters    - { status, priority, dateRange, searchQuery, sortBy }
- * @returns {Array}           - filtered, searched, sorted orders
+ * Sorts orders by a given field and direction.
+ * @param {Array} orders
+ * @param {string} field
+ * @param {'asc'|'desc'} direction
  */
-export const applyAllFilters = (orders, filters = {}) => {
-  const {
-    status      = "all",
-    priority    = "all",
-    dateRange   = "all",
-    searchQuery = "",
-    sortBy      = "newest",
-  } = filters;
+export const sortOrders = (orders, field, direction) => {
+  return [...orders].sort((a, b) => {
+    let valA = a[field]
+    let valB = b[field]
 
-  let result = [...orders];
-  result = filterByStatus(result, status);
-  result = filterByPriority(result, priority);
-  result = filterByDate(result, dateRange);
-  result = searchOrders(result, searchQuery);
-  result = sortOrders(result, sortBy);
+    // Handle dates
+    if (field === 'createdAt') {
+      valA = new Date(valA)
+      valB = new Date(valB)
+    }
 
-  return result;
-};
+    // Handle numbers
+    if (typeof valA === 'number' && typeof valB === 'number') {
+      return direction === 'asc' ? valA - valB : valB - valA
+    }
 
+    // Handle strings
+    if (typeof valA === 'string') valA = valA.toLowerCase()
+    if (typeof valB === 'string') valB = valB.toLowerCase()
+
+    if (valA < valB) return direction === 'asc' ? -1 : 1
+    if (valA > valB) return direction === 'asc' ? 1 : -1
+    return 0
+  })
+}
 /**
  * Compute all dashboard stats from the orders array.
  * Keeps stats always in sync with real data.
@@ -236,3 +256,7 @@ export const groupNotificationsByDate = (notifications) => {
  */
 export const countUnread = (notifications) =>
   notifications.filter((n) => !n.read).length;
+
+
+
+
