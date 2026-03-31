@@ -5,7 +5,7 @@ import {
   ShoppingBag, AlertTriangle, Truck, BarChart2, Info,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
-import { notifications as rawNotifications } from '../data/orders'
+import { useApp } from '../context/AppContext'
 import { formatDate, formatTime } from '../utils/formatters'
 
 // ─── Notification type config ─────────────────────────────────────────────────
@@ -156,26 +156,16 @@ const EmptyState = ({ filtered, isDark }) => (
 const Notifications = () => {
   const { isDark } = useTheme()
   const navigate   = useNavigate()
+  const { notifications, unreadCount, markNotificationRead, markAllNotificationsRead } = useApp()
 
-  const [items, setItems]       = useState(rawNotifications)
-  const [filter, setFilter]     = useState('all') // 'all' | 'unread'
-
-  const unreadCount = useMemo(() => items.filter((n) => !n.read).length, [items])
+  const [filter, setFilter] = useState('all') // 'all' | 'unread'
 
   const filtered = useMemo(
-    () => filter === 'unread' ? items.filter((n) => !n.read) : items,
-    [items, filter]
+    () => filter === 'unread' ? notifications.filter((n) => !n.read) : notifications,
+    [notifications, filter]
   )
 
   const groups = useMemo(() => groupByDate(filtered), [filtered])
-
-  const markRead = (id) => {
-    setItems((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n))
-  }
-
-  const markAllRead = () => {
-    setItems((prev) => prev.map((n) => ({ ...n, read: true })))
-  }
 
   // Navigate to orders list — in real app resolve orderId → numeric id and go to /orders/:id
   const handleOrderNavigate = () => navigate('/orders')
@@ -199,7 +189,7 @@ const Notifications = () => {
 
         {unreadCount > 0 && (
           <button
-            onClick={markAllRead}
+            onClick={markAllNotificationsRead}
             className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
           >
             <CheckCheck size={15} />
@@ -247,7 +237,7 @@ const Notifications = () => {
                 <NotificationCard
                   key={notification.id}
                   notification={notification}
-                  onMarkRead={markRead}
+                  onMarkRead={markNotificationRead}
                   onNavigate={handleOrderNavigate}
                   isDark={isDark}
                 />

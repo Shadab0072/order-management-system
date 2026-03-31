@@ -5,7 +5,7 @@ import {
   UserCheck, FileText, CheckCircle2, Circle, Clock, Pencil,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
-import { orders } from '../data/orders'
+import { useApp } from '../context/AppContext'
 import { formatCurrency, formatDate, formatTime } from '../utils/formatters'
 import { statusConfig, priorityConfig } from '../constants/status'
 
@@ -148,8 +148,9 @@ const OrderDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { isDark } = useTheme()
+  const { orders } = useApp()
 
-  const order = useMemo(() => orders.find((o) => String(o.id) === String(id)), [id])
+  const order = useMemo(() => orders.find((o) => String(o.id) === String(id)), [id, orders])
 
   if (!order) return <NotFound isDark={isDark} onBack={() => navigate('/orders')} />
 

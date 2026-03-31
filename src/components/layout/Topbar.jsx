@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Bell, Sun, Moon, Search } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
-import { notifications } from '../../data/orders'
+import { useApp } from '../../context/AppContext'
 
 // Map route paths to readable page titles
 const PAGE_TITLES = {
@@ -20,10 +20,9 @@ const getPageTitle = (pathname) => {
 
 const Topbar = () => {
   const { isDark, toggleTheme } = useTheme()
+  const { unreadCount } = useApp()
   const location = useLocation()
   const navigate = useNavigate()
-
-  const unreadCount = notifications.filter((n) => !n.read).length
   const pageTitle = getPageTitle(location.pathname)
 
   return (

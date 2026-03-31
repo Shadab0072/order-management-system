@@ -20,7 +20,8 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
-import { orders, weeklyData } from '../data/orders'
+import { useApp } from '../context/AppContext'
+import { weeklyData } from '../data/orders'
 import { computeDashboardStats } from '../utils/orderHelpers'
 import { formatCurrency, formatDate } from '../utils/formatters'
 import { statusConfig, priorityConfig } from '../constants/status'
@@ -125,8 +126,9 @@ const OrderRow = ({ order, onClick, isDark }) => {
 const Dashboard = () => {
   const { isDark } = useTheme()
   const navigate = useNavigate()
+  const { orders } = useApp()
 
-  const stats = useMemo(() => computeDashboardStats(orders), [])
+  const stats = useMemo(() => computeDashboardStats(orders), [orders])
 
   const statCards = [
     { label: 'Total Orders',  value: stats.total,       icon: ShoppingBag,  color: '#6366f1', delta: 12 },
@@ -145,7 +147,7 @@ const Dashboard = () => {
 
   const recentOrders = useMemo(
     () => [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6),
-    []
+    [orders]
   )
 
   const gridColor = isDark ? '#1f2937' : '#f3f4f6'

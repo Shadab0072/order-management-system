@@ -5,7 +5,7 @@ import {
   ChevronUp, ChevronDown, ChevronsUpDown, PackageSearch,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
-import { orders } from '../data/orders'
+import { useApp } from '../context/AppContext'
 import { formatCurrency, formatDate } from '../utils/formatters'
 import { statusConfig, priorityConfig, STATUS_OPTIONS, PRIORITY_OPTIONS } from '../constants/status'
 import { applyAllFilters, sortOrders } from '../utils/orderHelpers'
@@ -71,11 +71,11 @@ const OrderRow = ({ order, isDark, onView, onEdit, onCancel }) => {
       <td className="px-4 py-3.5">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            {order.customerName ? order.customerName.charAt(0) : '?'}
+            {order.customerName.charAt(0)}
           </div>
           <div>
-            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{order.customerName || 'Unknown Customer'}</p>
-            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{order.customerEmail || 'No email provided'}</p>
+            <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{order.customerName}</p>
+            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{order.customerEmail}</p>
           </div>
         </div>
       </td>
@@ -135,20 +135,15 @@ const INITIAL_FILTERS = { search: '', status: '', priority: '', dateFrom: '', da
 const OrderList = () => {
   const { isDark } = useTheme()
   const navigate = useNavigate()
+  const { orders, cancelOrder } = useApp()
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [sortField, setSortField] = useState('createdAt')
   const [sortDir, setSortDir] = useState('desc')
-  const [cancelledIds, setCancelledIds] = useState([])
-
-  const liveOrders = useMemo(
-    () => orders.map((o) => cancelledIds.includes(o.id) ? { ...o, status: 'cancelled' } : o),
-    [cancelledIds]
-  )
 
   const filteredOrders = useMemo(() => {
-    const filtered = applyAllFilters(liveOrders, filters)
+    const filtered = applyAllFilters(orders, filters)
     return sortOrders(filtered, sortField, sortDir)
-  }, [liveOrders, filters, sortField, sortDir])
+  }, [orders, filters, sortField, sortDir])
 
   const handleFilterChange = (key, value) => {
     if (key === '__reset__') return setFilters(INITIAL_FILTERS)
@@ -160,7 +155,7 @@ const OrderList = () => {
     else { setSortField(field); setSortDir('asc') }
   }
 
-  const handleCancel = (id) => setCancelledIds((prev) => [...new Set([...prev, id])])
+  const handleCancel = (id) => cancelOrder(id)
 
   const COLUMNS = [
     { label: 'Order ID', field: 'orderId' },

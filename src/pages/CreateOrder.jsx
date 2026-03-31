@@ -5,7 +5,7 @@ import {
   ClipboardList, User, Eye, Package,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
-import { orders } from '../data/orders'
+import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/formatters'
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from '../constants/status'
 
@@ -300,10 +300,11 @@ const CreateOrder = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { isDark } = useTheme()
+  const { orders, addOrder, updateOrder } = useApp()
   const isEditMode = Boolean(id)
 
-  // Pre-fill form in edit mode
-  const existingOrder = useMemo(() => orders.find((o) => String(o.id) === String(id)), [id])
+  // Pre-fill form in edit mode — read from live context orders
+  const existingOrder = useMemo(() => orders.find((o) => String(o.id) === String(id)), [id, orders])
 
   const [step, setStep]     = useState(1)
   const [form, setForm]     = useState(() => {
@@ -355,7 +356,12 @@ const CreateOrder = () => {
   }
 
   const handleSubmit = () => {
-    // In a real app: POST/PUT to API here
+    // Call context action — this updates global state instantly
+    if (isEditMode) {
+      updateOrder(id, form)
+    } else {
+      addOrder(form)
+    }
     setSubmitted(true)
     setTimeout(() => navigate('/orders'), 1500)
   }
