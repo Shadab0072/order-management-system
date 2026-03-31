@@ -179,6 +179,43 @@ export const AppProvider = ({ children }) => {
     }
   }, [pushNotification])
 
+  // ── Update Timeline Step ─────────────────────────────────────────────────── 
+  const updateTimelineStep = useCallback((id, stepKey, isCompleted) => {
+    let updatedOrder = null
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (String(o.id) !== String(id)) return o
+
+        const newTimeline = o.timeline.map((t) => {
+          if (t.status === stepKey) {
+            return {
+              ...t,
+              completed: isCompleted,
+              timestamp: isCompleted ? new Date().toISOString() : null,
+            }
+          }
+          return t
+        })
+
+        // Simple logic: if delivered is marked complete, overall status could be completed
+        let newStatus = o.status
+        if (stepKey === 'delivered' && isCompleted) newStatus = 'completed'
+
+        updatedOrder = { ...o, timeline: newTimeline, status: newStatus }
+        return updatedOrder
+      })
+    )
+
+    if (updatedOrder) {
+      pushNotification({
+        type:    'status_change',
+        title:   'Timeline updated',
+        message: `Order ${updatedOrder.orderId} step "${stepKey}" marked as ${isCompleted ? 'Complete' : 'Pending'}.`,
+        orderId: updatedOrder.orderId,
+      })
+    }
+  }, [pushNotification])
   // ── Mark notification read ────────────────────────────────────────────────
   const markNotificationRead = useCallback((id) => {
     setNotifications((prev) =>
@@ -205,6 +242,7 @@ export const AppProvider = ({ children }) => {
     addOrder,
     updateOrder,
     cancelOrder,
+    updateTimelineStep,
 
     // Notification actions
     markNotificationRead,

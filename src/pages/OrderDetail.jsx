@@ -32,7 +32,7 @@ const InfoRow = ({ icon: Icon, label, value, isDark }) => (
 )
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
-const Timeline = ({ timeline, isDark }) => {
+const Timeline = ({ timeline, isDark, onToggleStep }) => {
   const steps = [
     { key: 'placed',     label: 'Order Placed' },
     { key: 'processing', label: 'Processing' },
@@ -79,27 +79,39 @@ const Timeline = ({ timeline, isDark }) => {
             </div>
 
             {/* Step content */}
-            <div className={`pb-6 flex-1 ${i === steps.length - 1 ? 'pb-0' : ''}`}>
-              <p className={`text-sm font-semibold ${
-                isCompleted
-                  ? isDark ? 'text-white' : 'text-gray-900'
-                  : isDark ? 'text-gray-600' : 'text-gray-400'
-              }`}>
-                {step.label}
-              </p>
-              {entry?.timestamp && (
-                <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {formatDate(entry.timestamp)} · {formatTime(entry.timestamp)}
+            <div className={`pb-6 flex-1 flex items-start justify-between ${i === steps.length - 1 ? 'pb-0' : ''}`}>
+              <div>
+                <p className={`text-sm font-semibold ${
+                  isCompleted
+                    ? isDark ? 'text-white' : 'text-gray-900'
+                    : isDark ? 'text-gray-600' : 'text-gray-400'
+                }`}>
+                  {step.label}
                 </p>
-              )}
-              {entry?.note && (
-                <p className={`text-xs mt-1 italic ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {entry.note}
-                </p>
-              )}
-              {!isCompleted && !entry && (
-                <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-700' : 'text-gray-300'}`}>Pending</p>
-              )}
+                {entry?.timestamp && (
+                  <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {formatDate(entry.timestamp)} · {formatTime(entry.timestamp)}
+                  </p>
+                )}
+                {entry?.note && (
+                  <p className={`text-xs mt-1 italic ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {entry.note}
+                  </p>
+                )}
+                {!isCompleted && !entry && (
+                  <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-700' : 'text-gray-300'}`}>Pending</p>
+                )}
+              </div>
+              <button
+                onClick={() => onToggleStep(step.key, !isCompleted)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${
+                  isCompleted
+                    ? isDark ? 'bg-indigo-900/40 text-indigo-400 hover:bg-indigo-900/60 border-indigo-500/30' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-200'
+                    : isDark ? 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white border-gray-700' : 'bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 border-gray-200'
+                }`}
+              >
+                {isCompleted ? 'Pending' : 'Complete'}
+              </button>
             </div>
           </div>
         )
@@ -148,7 +160,7 @@ const OrderDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { isDark } = useTheme()
-  const { orders } = useApp()
+  const { orders, updateTimelineStep } = useApp()
 
   const order = useMemo(() => orders.find((o) => String(o.id) === String(id)), [id, orders])
 
@@ -198,7 +210,11 @@ const OrderDetail = () => {
         {/* Col 1: Timeline + Notes */}
         <div className="space-y-5">
           <Card title="Order Timeline" icon={Clock} isDark={isDark}>
-            <Timeline timeline={order.timeline} isDark={isDark} />
+            <Timeline 
+              timeline={order.timeline} 
+              isDark={isDark} 
+              onToggleStep={(stepKey, isCompleted) => updateTimelineStep(order.id, stepKey, isCompleted)} 
+            />
           </Card>
           {order.notes && (
             <Card title="Notes" icon={FileText} isDark={isDark}>
