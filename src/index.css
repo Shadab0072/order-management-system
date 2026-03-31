@@ -1,0 +1,112 @@
+/* ─────────────────────────────────────────────
+   src/index.css
+   Global styles + CSS custom properties
+   Tailwind dark: prefix is class-based (set on <html>)
+───────────────────────────────────────────── */
+
+@import "tailwindcss";
+
+
+/* Tell Tailwind to use class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Light mode tokens ───────────────────── */
+:root {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f8f9fc;
+  --bg-tertiary:   #f1f3f9;
+  --bg-card:       #ffffff;
+
+  --text-primary:   #0f1117;
+  --text-secondary: #4b5280;
+  --text-muted:     #8b93b8;
+
+  --border-default: #e2e6f3;
+  --border-strong:  #c8cde6;
+
+  --accent:        #7c6ff7;
+  --accent-hover:  #6a5ef0;
+  --accent-subtle: #eeedfe;
+
+  --success:       #059669;
+  --success-bg:    #ecfdf5;
+  --warning:       #d97706;
+  --warning-bg:    #fffbeb;
+  --danger:        #dc2626;
+  --danger-bg:     #fef2f2;
+  --info:          #2563eb;
+  --info-bg:       #eff6ff;
+}
+
+/* ── Dark mode tokens ────────────────────── */
+.dark {
+  --bg-primary:    #0f1117;
+  --bg-secondary:  #1a1d27;
+  --bg-tertiary:   #222638;
+  --bg-card:       #1a1d27;
+
+  --text-primary:   #e8eaf6;
+  --text-secondary: #9da5c7;
+  --text-muted:     #6b74a0;
+
+  --border-default: #2a2f45;
+  --border-strong:  #363d5c;
+
+  --accent:        #7c6ff7;
+  --accent-hover:  #8b7ff8;
+  --accent-subtle: #2a2660;
+
+  --success:       #22c997;
+  --success-bg:    #0a4f3c;
+  --warning:       #f59e0b;
+  --warning-bg:    #451a03;
+  --danger:        #ef4444;
+  --danger-bg:     #450a0a;
+  --info:          #60a5fa;
+  --info-bg:       #1e3a5f;
+}
+
+/* ── Base resets ─────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  line-height: 1.6;
+}
+
+/* ── Scrollbar styling ───────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border-strong); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Selection color ─────────────────────── */
+::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* ── Smooth transitions on theme change ─── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+/* Exception: don't animate transforms/opacity with that rule */
+svg, img, button {
+  transition: none;
+}
