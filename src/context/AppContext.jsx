@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import {
   orders as initialOrders,
   notifications as initialNotifications,
@@ -35,8 +35,41 @@ const buildNotification = ({ type, title, message, orderId = null }) => ({
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export const AppProvider = ({ children }) => {
-  const [orders, setOrders]             = useState(initialOrders)
-  const [notifications, setNotifications] = useState(initialNotifications)
+  const [orders, setOrders] = useState(() => {
+    try {
+      const localData = localStorage.getItem('app_orders')
+      return localData ? JSON.parse(localData) : initialOrders
+    } catch (err) {
+      console.error('Error parsing orders from localStorage', err)
+      return initialOrders
+    }
+  })
+
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const localData = localStorage.getItem('app_notifications')
+      return localData ? JSON.parse(localData) : initialNotifications
+    } catch (err) {
+      console.error('Error parsing notifications from localStorage', err)
+      return initialNotifications
+    }
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('app_orders', JSON.stringify(orders))
+    } catch (err) {
+      console.error('Error saving orders to localStorage', err)
+    }
+  }, [orders])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('app_notifications', JSON.stringify(notifications))
+    } catch (err) {
+      console.error('Error saving notifications to localStorage', err)
+    }
+  }, [notifications])
 
   // ── Internal: push a notification ──────────────────────────────────────────
   const pushNotification = useCallback((notif) => {
