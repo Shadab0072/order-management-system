@@ -21,7 +21,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useApp } from '../context/AppContext'
-import { weeklyData } from '../data/orders'
 import { computeDashboardStats } from '../utils/orderHelpers'
 import { formatCurrency, formatDate } from '../utils/formatters'
 import { statusConfig, priorityConfig } from '../constants/status'
@@ -130,6 +129,31 @@ const Dashboard = () => {
 
   const stats = useMemo(() => computeDashboardStats(orders), [orders])
 
+  const dynamicWeeklyData = useMemo(() => {
+    const data = [
+      { day: "Mon", orders: 0, revenue: 0 },
+      { day: "Tue", orders: 0, revenue: 0 },
+      { day: "Wed", orders: 0, revenue: 0 },
+      { day: "Thu", orders: 0, revenue: 0 },
+      { day: "Fri", orders: 0, revenue: 0 },
+      { day: "Sat", orders: 0, revenue: 0 },
+      { day: "Sun", orders: 0, revenue: 0 },
+    ]
+
+    orders.forEach((order) => {
+      const d = new Date(order.createdAt)
+      const dayIndex = d.getDay() // 0 is Sun, 1 is Mon
+      const idx = dayIndex === 0 ? 6 : dayIndex - 1
+
+      data[idx].orders += 1
+      if (order.status === 'completed') {
+        data[idx].revenue += order.totalAmount || 0
+      }
+    })
+
+    return data
+  }, [orders])
+
   const statCards = [
     { label: 'Total Orders',  value: stats.total,       icon: ShoppingBag,  color: '#6366f1', delta: 12 },
     { label: 'Pending',       value: stats.pending,     icon: Clock,        color: '#f59e0b' },
@@ -172,7 +196,7 @@ const Dashboard = () => {
             Weekly Revenue
           </p>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={weeklyData} barSize={28}>
+            <BarChart data={dynamicWeeklyData} barSize={28}>
               <XAxis dataKey="day" tick={{ fill: axisColor, fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} />
               <Tooltip content={<CustomBarTooltip isDark={isDark} />} cursor={{ fill: gridColor }} />

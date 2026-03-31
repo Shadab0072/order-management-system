@@ -367,14 +367,4 @@ export const notifications = [
     createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
   },
 ]
-
-// ─── Weekly Chart Data ────────────────────────────────────────────────────────
-export const weeklyData = [
-  { day: "Mon", orders: 18, revenue: 42000 },
-  { day: "Tue", orders: 24, revenue: 67000 },
-  { day: "Wed", orders: 20, revenue: 51000 },
-  { day: "Thu", orders: 31, revenue: 89000 },
-  { day: "Fri", orders: 27, revenue: 73000 },
-  { day: "Sat", orders: 15, revenue: 31000 },
-  { day: "Sun", orders: 11, revenue: 22000 },
-]
+
