@@ -157,14 +157,16 @@ const Dashboard = () => {
   const statCards = [
     { label: 'Total Orders',  value: stats.total,       icon: ShoppingBag,  color: '#6366f1',  },
     { label: 'Pending',       value: stats.pending,     icon: Clock,        color: '#f59e0b' },
-    { label: 'In Progress',   value: stats.in_progress, icon: Loader2,      color: '#3b82f6' },
+    { label: 'In Progress',   value: stats.inProgress,  icon: Loader2,      color: '#3b82f6' },
     { label: 'Completed',     value: stats.completed,   icon: CheckCircle2, color: '#10b981',  },
     { label: 'Cancelled',     value: stats.cancelled,   icon: XCircle,      color: '#ef4444' },
   ]
 
+  console.log(stats)
+
   const donutData = [
     { name: 'Pending',     value: stats.pending,     color: '#f59e0b' },
-    { name: 'In Progress', value: stats.in_progress, color: '#3b82f6' },
+    { name: 'In Progress', value: stats.inProgress, color: '#3b82f6' },
     { name: 'Completed',   value: stats.completed,   color: '#10b981' },
     { name: 'Cancelled',   value: stats.cancelled,   color: '#ef4444' },
   ]

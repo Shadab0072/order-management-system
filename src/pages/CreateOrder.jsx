@@ -11,9 +11,9 @@ import { STATUS_OPTIONS, PRIORITY_OPTIONS } from '../constants/status'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const STEPS = [
-  { id: 1, label: 'Basic Info',  icon: ClipboardList },
-  { id: 2, label: 'Customer',    icon: User },
-  { id: 3, label: 'Items',       icon: Package },
+  { id: 1, label: 'Customer',    icon: User },
+  { id: 2, label: 'Items',       icon: Package },
+  { id: 3, label: 'Basic Info',  icon: ClipboardList },
   { id: 4, label: 'Review',      icon: Eye },
 ]
 
@@ -406,9 +406,9 @@ const CreateOrder = () => {
           {STEPS[step - 1].label}
         </p>
 
-        {step === 1 && <StepBasicInfo  form={form} errors={errors} onChange={onChange} isDark={isDark} />}
-        {step === 2 && <StepCustomer   form={form} errors={errors} onChange={onChange} isDark={isDark} />}
-        {step === 3 && <StepItems      form={form} errors={errors} onItemChange={onItemChange} onAddItem={onAddItem} onRemoveItem={onRemoveItem} isDark={isDark} />}
+        {step === 1 && <StepCustomer   form={form} errors={errors} onChange={onChange} isDark={isDark} />}
+        {step === 2 && <StepItems      form={form} errors={errors} onItemChange={onItemChange} onAddItem={onAddItem} onRemoveItem={onRemoveItem} isDark={isDark} />}
+        {step === 3 && <StepBasicInfo  form={form} errors={errors} onChange={onChange} isDark={isDark} />}
         {step === 4 && <StepReview     form={form} onEdit={(s) => setStep(s)} isDark={isDark} />}
       </div>
 
