@@ -81,8 +81,15 @@ const CustomBarTooltip = ({ active, payload, label, isDark }) => {
 
 // ─── Recent Orders Row ────────────────────────────────────────────────────────
 const OrderRow = ({ order, onClick, isDark }) => {
-  const status = statusConfig[order.status]
-  const priority = priorityConfig[order.priority]
+  // const status = statusConfig[order.status]
+  // const priority = priorityConfig[order.priority]
+
+  const statusKey = order.status?.toLowerCase().replace(" ", "_");
+const status = statusConfig[statusKey] || {};
+
+const priorityKey = order.priority?.toLowerCase();
+const priority = priorityConfig[priorityKey] || {};
+
 
   return (
     <tr
@@ -100,14 +107,14 @@ const OrderRow = ({ order, onClick, isDark }) => {
       <td className="px-4 py-3">
         <span
           className="px-2.5 py-1 rounded-full text-xs font-semibold"
-          style={{ backgroundColor: status.bg, color: status.text }}
+          style={{ backgroundColor: status?.badgeBg, color: status?.badgeFg }}
         >
           {status.label}
         </span>
       </td>
       <td className="px-4 py-3">
-        <span className="flex items-center gap-1.5 text-xs font-medium" style={{ color: priority.color }}>
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: priority.color }} />
+        <span className="flex items-center gap-1.5 text-xs font-medium" style={{ color: priority?.dotColor }}>
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: priority?.dotColor }} />
           {priority.label}
         </span>
       </td>

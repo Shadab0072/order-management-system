@@ -42,7 +42,12 @@ export const AppProvider = ({ children }) => {
   const [orders, setOrders] = useState(() => {
     try {
       const localData = localStorage.getItem('app_orders')
-      return localData ? JSON.parse(localData) : initialOrders
+      if (localData) {
+        const parsed = JSON.parse(localData)
+        // Migration: convert any 'processing' status back to 'in_progress'
+        return parsed.map(o => o.status === 'processing' ? { ...o, status: 'in_progress' } : o)
+      }
+      return initialOrders
     } catch (err) {
       console.error('Error parsing orders from localStorage', err)
       return initialOrders
@@ -221,6 +226,30 @@ export const AppProvider = ({ children }) => {
       })
     }
   }, [pushNotification])
+
+  // ── Update Order Status ───────────────────────────────────────────────────
+  const updateOrderStatus = useCallback((id, newStatus) => {
+    let updatedOrder = null
+    // Normalize newStatus in case 'processing' sneaks in
+    const finalStatus = newStatus === 'processing' ? 'in_progress' : newStatus
+
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (String(o.id) !== String(id)) return o
+        updatedOrder = { ...o, status: finalStatus }
+        return updatedOrder
+      })
+    )
+
+    if (updatedOrder) {
+      pushNotification({
+        type:    'status_change',
+        title:   'Order Status Updated',
+        message: `Order ${updatedOrder.orderId} status changed to ${finalStatus}.`,
+        orderId: updatedOrder.orderId,
+      })
+    }
+  }, [pushNotification])
   // ── Mark notification read ────────────────────────────────────────────────
   const markNotificationRead = useCallback((id) => {
     setNotifications((prev) =>
@@ -248,6 +277,7 @@ export const AppProvider = ({ children }) => {
     updateOrder,
     cancelOrder,
     updateTimelineStep,
+    updateOrderStatus,
 
     // Notification actions
     markNotificationRead,

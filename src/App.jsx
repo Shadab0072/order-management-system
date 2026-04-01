@@ -5,6 +5,7 @@ import OrderList from './pages/OrderList'
 import OrderDetail from './pages/OrderDetail'
 import CreateOrder from './pages/CreateOrder'
 import Notifications from './pages/Notifications'
+import KanbanPage from './pages/KanbanPage'
 import NotFound from './pages/NotFound'
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/orders/create"   element={<CreateOrder />} />
           <Route path="/orders/edit/:id" element={<CreateOrder />} />
           <Route path="/orders/:id"      element={<OrderDetail />} />
+          <Route path="/kanban"          element={<KanbanPage />} />
           <Route path="/notifications"   element={<Notifications />} />
         </Route>
         <Route path="*" element={<NotFound />} />

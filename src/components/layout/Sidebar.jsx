@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Package,
+  Kanban,
 } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 
@@ -15,6 +16,11 @@ const NAV_ITEMS = [
     label: 'Dashboard',
     path: '/dashboard',
     icon: LayoutDashboard,
+  },
+  {
+    label: 'Kanban Board',
+    path: '/kanban',
+    icon: Kanban,
   },
   {
     label: 'Orders',

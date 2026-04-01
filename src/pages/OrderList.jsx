@@ -63,8 +63,15 @@ const Th = ({ label, field, sortField, sortDir, onSort, isDark }) => (
 
 // ─── Order Row ────────────────────────────────────────────────────────────────
 const OrderRow = ({ order, isDark, onView, onEdit, onCancel }) => {
-  const status = statusConfig[order.status]
-  const priority = priorityConfig[order.priority]
+  // const status = statusConfig[order.status]
+  // const priority = priorityConfig[order.priority]
+
+  const statusKey = order.status?.toLowerCase().replace(" ", "_");
+const status = statusConfig[statusKey] || {};
+
+const priorityKey = order.priority?.toLowerCase();
+const priority = priorityConfig[priorityKey] || {};
+
   return (
     <tr className={`group relative transition-colors duration-150 ${isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-50'}`}>
       <td className={`px-4 py-3.5 text-sm font-medium ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>{order.orderId}</td>
