@@ -20,17 +20,17 @@ const STEPS = [
 const EMPTY_ITEM = { name: '', quantity: 1, price: '' }
 
 const INITIAL_FORM = {
-  // Step 1
+  date:     new Date().toISOString().split('T')[0],
   status:   'pending',
   priority: 'medium',
   notes:    '',
-  // Step 2
+  // Customer
   customerName:    '',
   customerEmail:   '',
   customerPhone:   '',
   shippingAddress: '',
   assignedAgent:   '',
-  // Step 3
+  // Items
   items: [{ ...EMPTY_ITEM }],
 }
 
@@ -39,11 +39,6 @@ const validateStep = (step, form) => {
   const errors = {}
 
   if (step === 1) {
-    if (!form.status)   errors.status   = 'Status is required'
-    if (!form.priority) errors.priority = 'Priority is required'
-  }
-
-  if (step === 2) {
     if (!form.customerName.trim())    errors.customerName    = 'Name is required'
     if (!form.customerEmail.trim())   errors.customerEmail   = 'Email is required'
     else if (!/\S+@\S+\.\S+/.test(form.customerEmail))
@@ -52,7 +47,7 @@ const validateStep = (step, form) => {
     if (!form.shippingAddress.trim()) errors.shippingAddress = 'Address is required'
   }
 
-  if (step === 3) {
+  if (step === 2) {
     form.items.forEach((item, i) => {
       if (!item.name.trim())          errors[`item_name_${i}`]  = 'Item name required'
       if (!item.price || item.price <= 0)
@@ -60,6 +55,12 @@ const validateStep = (step, form) => {
       if (!item.quantity || item.quantity < 1)
                                       errors[`item_qty_${i}`]   = 'Min quantity is 1'
     })
+  }
+
+  if (step === 3) {
+    if (!form.date)     errors.date     = 'Date is required'
+    if (!form.status)   errors.status   = 'Status is required'
+    if (!form.priority) errors.priority = 'Priority is required'
   }
 
   return errors
@@ -81,10 +82,15 @@ const inputCls = (isDark, error) =>
   ${error ? 'border-red-500 focus:border-red-400' : isDark ? 'border-gray-700 focus:border-indigo-500' : 'border-gray-200 focus:border-indigo-400'}
   ${isDark ? 'bg-gray-800 text-gray-200 placeholder-gray-600' : 'bg-white text-gray-800 placeholder-gray-400'}`
 
-// ─── Step 1: Basic Info ───────────────────────────────────────────────────────
+// ─── Step 3: Basic Info ───────────────────────────────────────────────────────
 const StepBasicInfo = ({ form, errors, onChange, isDark }) => (
   <div className="space-y-5">
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <Field label="Order Date" error={errors.date}>
+        <input type="date" value={form.date}
+          onChange={(e) => onChange('date', e.target.value)}
+          className={inputCls(isDark, errors.date)} />
+      </Field>
       <Field label="Status" error={errors.status}>
         <select value={form.status} onChange={(e) => onChange('status', e.target.value)}
           className={inputCls(isDark, errors.status) + ' cursor-pointer'}>
@@ -226,12 +232,7 @@ const StepReview = ({ form, onEdit, isDark }) => {
 
   return (
     <div className="space-y-4">
-      <ReviewBlock title="Basic Info" stepIndex={1} rows={[
-        ['Status',   form.status],
-        ['Priority', form.priority],
-        ['Notes',    form.notes || '—'],
-      ]} />
-      <ReviewBlock title="Customer" stepIndex={2} rows={[
+      <ReviewBlock title="Customer" stepIndex={1} rows={[
         ['Name',     form.customerName],
         ['Email',    form.customerEmail],
         ['Phone',    form.customerPhone],
@@ -241,7 +242,7 @@ const StepReview = ({ form, onEdit, isDark }) => {
       <div className={`rounded-xl border p-5 ${isDark ? 'bg-gray-800/40 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
         <div className="flex items-center justify-between mb-3">
           <span className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Items</span>
-          <button onClick={() => onEdit(3)} className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Edit</button>
+          <button onClick={() => onEdit(2)} className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Edit</button>
         </div>
         {form.items.filter((i) => i.name).map((item, i) => (
           <div key={i} className={`flex justify-between py-2 border-b last:border-0 ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
@@ -254,6 +255,12 @@ const StepReview = ({ form, onEdit, isDark }) => {
           <span className="text-base font-bold text-indigo-500">{formatCurrency(total)}</span>
         </div>
       </div>
+      <ReviewBlock title="Basic Info" stepIndex={3} rows={[
+        ['Date',     form.date],
+        ['Status',   form.status],
+        ['Priority', form.priority],
+        ['Notes',    form.notes || '—'],
+      ]} />
     </div>
   )
 }
@@ -310,6 +317,7 @@ const CreateOrder = () => {
   const [form, setForm]     = useState(() => {
     if (isEditMode && existingOrder) {
       return {
+        date:            existingOrder.createdAt       ? new Date(existingOrder.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         status:          existingOrder.status          || 'pending',
         priority:        existingOrder.priority        || 'medium',
         notes:           existingOrder.notes           || '',

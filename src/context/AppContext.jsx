@@ -15,9 +15,13 @@ export const useApp = () => {
 }
 
 // ─── ID generators ────────────────────────────────────────────────────────────
-const generateOrderId = () => {
-  const num = Math.floor(Math.random() * 9000) + 1000
-  return `ORD-${num}`
+const generateOrderId = (orders) => {
+  if (!orders || orders.length === 0) return 'ORD-001'
+  const maxNum = Math.max(...orders.map((o) => {
+    const match = o.orderId?.match(/\d+$/)
+    return match ? parseInt(match[0], 10) : 0
+  }))
+  return `ORD-${String(maxNum + 1).padStart(3, '0')}`
 }
 
 const generateId = (arr) => (arr.length > 0 ? Math.max(...arr.map((x) => x.id)) + 1 : 1)
@@ -80,7 +84,7 @@ export const AppProvider = ({ children }) => {
   const addOrder = useCallback((formData) => {
     const newOrder = {
       id:              generateId(orders),
-      orderId:         generateOrderId(),
+      orderId:         generateOrderId(orders),
       status:          formData.status       || 'pending',
       priority:        formData.priority     || 'medium',
       notes:           formData.notes        || '',
@@ -93,7 +97,7 @@ export const AppProvider = ({ children }) => {
       totalAmount:     formData.items.reduce(
         (sum, i) => sum + (Number(i.price) || 0) * (Number(i.quantity) || 0), 0
       ),
-      createdAt: new Date().toISOString(),
+      createdAt:       formData.date ? new Date(formData.date).toISOString() : new Date().toISOString(),
       timeline: [
         {
           status:    'placed',
@@ -140,6 +144,7 @@ export const AppProvider = ({ children }) => {
           totalAmount:     formData.items.reduce(
             (sum, i) => sum + (Number(i.price) || 0) * (Number(i.quantity) || 0), 0
           ),
+          createdAt:       formData.date ? new Date(formData.date).toISOString() : o.createdAt,
         }
         return updatedOrder
       })
