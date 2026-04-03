@@ -1,18 +1,17 @@
-import { forwardRef } from 'react'
-import { useTheme } from '../../context/ThemeContext'
-
-export const Textarea = forwardRef(({ className = '', error, ...props }, ref) => {
-  const { isDark } = useTheme()
-  
+import * as React from "react";
+import { cn } from "@/lib/cn";
+const Textarea = React.forwardRef(({ className, ...props }, ref) => {
   return (
     <textarea
+      className={cn(
+        "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
       ref={ref}
-      className={`w-full px-3 py-2.5 rounded-lg text-sm border outline-none transition-colors resize-none
-        ${error ? 'border-red-500 focus:border-red-400' : isDark ? 'border-gray-700 focus:border-indigo-500' : 'border-gray-200 focus:border-indigo-400'}
-        ${isDark ? 'bg-gray-800 text-gray-200 placeholder-gray-600' : 'bg-white text-gray-800 placeholder-gray-400'} 
-        ${className}`}
-      {...props}
-    />
-  )
-})
-Textarea.displayName = 'Textarea'
+      {...props} />
+  );
+});
+Textarea.displayName = "Textarea";
+export {
+  Textarea
+};

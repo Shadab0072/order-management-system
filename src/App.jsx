@@ -1,32 +1,44 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/layout/Layout'
-import Dashboard from './pages/Dashboard'
-import OrderList from './pages/OrderList'
-import OrderDetail from './pages/OrderDetail'
-import CreateOrder from './pages/CreateOrder'
-import Notifications from './pages/Notifications'
-import KanbanPage from './pages/KanbanPage'
-import NotFound from './pages/NotFound'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { OrderProvider } from "@/context/OrderContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+import AppLayout from "@/components/layout/AppLayout";
+import Dashboard from "@/pages/Dashboard";
+import OrderList from "@/pages/OrderList";
+import OrderDetails from "@/pages/OrderDetails";
+import OrderForm from "@/pages/OrderForm";
+import KanbanBoard from "@/pages/KanbanBoard";
+import Notifications from "@/pages/Notifications";
+import NotFound from "./pages/NotFound.jsx";
 
-const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route element={<Layout />}>
-          <Route path="/dashboard"       element={<Dashboard />} />
-          <Route path="/orders"          element={<OrderList />} />
-          {/* /orders/create MUST be before /orders/:id to avoid "create" being treated as an id */}
-          <Route path="/orders/create"   element={<CreateOrder />} />
-          <Route path="/orders/edit/:id" element={<CreateOrder />} />
-          <Route path="/orders/:id"      element={<OrderDetail />} />
-          <Route path="/kanban"          element={<KanbanPage />} />
-          <Route path="/notifications"   element={<Notifications />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
-  )
-}
+const queryClient = new QueryClient();
 
-export default App
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Sonner />
+        <BrowserRouter>
+          <OrderProvider>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/orders" element={<OrderList />} />
+                <Route path="/orders/new" element={<OrderForm />} />
+                <Route path="/orders/:id" element={<OrderDetails />} />
+                <Route path="/orders/:id/edit" element={<OrderForm />} />
+                <Route path="/kanban" element={<KanbanBoard />} />
+                <Route path="/notifications" element={<Notifications />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </OrderProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
+
+export default App;

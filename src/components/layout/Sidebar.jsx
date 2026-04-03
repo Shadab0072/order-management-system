@@ -1,158 +1,128 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { Fragment, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
-  ShoppingBag,
+  ShoppingCart,
+  Plus,
+  Columns3,
   Bell,
-  PlusCircle,
   ChevronLeft,
   ChevronRight,
   Package,
-  Kanban,
-} from 'lucide-react'
-import { useTheme } from '../../context/ThemeContext'
-
-const NAV_ITEMS = [
-  {
-    label: 'Dashboard',
-    path: '/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    label: 'Kanban Board',
-    path: '/kanban',
-    icon: Kanban,
-  },
-  {
-    label: 'Orders',
-    path: '/orders',
-    icon: ShoppingBag,
-  },
-  {
-    label: 'Create Order',
-    path: '/orders/create',
-    icon: PlusCircle,
-  },
-  {
-    label: 'Notifications',
-    path: '/notifications',
-    icon: Bell,
-  },
-]
-
-const Sidebar = ({ collapsed, onToggle }) => {
-  const { isDark } = useTheme()
-  const location = useLocation()
-
+  X
+} from "lucide-react";
+import { useOrders } from "@/context/OrderContext";
+import { cn } from "@/lib/cn";
+const navItems = [
+  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Orders", icon: ShoppingCart, path: "/orders" },
+  { label: "Kanban", icon: Columns3, path: "/kanban" },
+  { label: "New Order", icon: Plus, path: "/orders/new" },
+  { label: "Notifications", icon: Bell, path: "/notifications" }
+];
+function Sidebar({ mobileOpen, onMobileClose }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+  const { unreadCount } = useOrders();
   return (
-    <aside
-      className={`
-        relative flex flex-col h-full
-        transition-all duration-300 ease-in-out
-        ${collapsed ? 'w-16' : 'w-60'}
-        ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}
-        border-r
-      `}
-    >
-      {/* Logo */}
-      <div
-        className={`
-          flex items-center gap-3 px-4 py-5
-          ${isDark ? 'border-gray-800' : 'border-gray-200'}
-          border-b
-        `}
-      >
-        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-          <Package size={16} className="text-white" />
-        </div>
-        {!collapsed && (
-          <span
-            className={`font-bold text-base tracking-tight ${
-              isDark ? 'text-white' : 'text-gray-900'
-            }`}
-          >
+    <Fragment>
+      {mobileOpen && <div
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
+        onClick={onMobileClose} />}
+      <aside
+        className={cn(
+          "fixed left-0 top-0 h-screen flex flex-col border-r border-sidebar-border bg-sidebar z-50 transition-all duration-300",
+          // Desktop
+          "hidden lg:flex",
+          collapsed ? "w-[68px]" : "w-[240px]"
+        )}>
+        <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
+          <Package className="h-7 w-7 text-primary shrink-0" />
+          {!collapsed && <span className="ml-3 text-lg font-bold text-foreground tracking-tight">
             OrderFlow
-          </span>
-        )}
-      </div>
-
-      {/* Nav Items */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map(({ label, path, icon: Icon }) => {
-          // Active check: exact for dashboard, startsWith for others
-          const isActive =
-            path === '/dashboard'
-              ? location.pathname === '/dashboard'
-              : location.pathname.startsWith(path)
-
-          return (
-            <NavLink
-              key={path}
-              to={path}
-              title={collapsed ? label : undefined}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg
-                transition-all duration-150 group relative
-                ${
-                  isActive
-                    ? 'bg-indigo-600 text-white'
-                    : isDark
-                    ? 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }
-              `}
-            >
-              <Icon size={18} className="flex-shrink-0" />
-              {!collapsed && (
-                <span className="text-sm font-medium">{label}</span>
-              )}
-
-              {/* Tooltip when collapsed */}
-              {collapsed && (
-                <div
-                  className={`
-                    absolute left-full ml-3 px-2 py-1 rounded-md text-xs font-medium
-                    pointer-events-none opacity-0 group-hover:opacity-100
-                    transition-opacity duration-150 whitespace-nowrap z-50
-                    ${isDark ? 'bg-gray-700 text-white' : 'bg-gray-900 text-white'}
-                  `}
-                >
-                  {label}
-                </div>
-              )}
-            </NavLink>
-          )
-        })}
-      </nav>
-
-      {/* Collapse Toggle Button */}
-      <button
-        onClick={onToggle}
-        className={`
-          absolute -right-3 top-20
-          w-6 h-6 rounded-full border flex items-center justify-center
-          transition-colors duration-150 z-10
-          ${
-            isDark
-              ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
-              : 'bg-white border-gray-200 text-gray-500 hover:text-gray-900'
-          }
-        `}
-      >
-        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
-      </button>
-
-      {/* Bottom: version tag */}
-      {!collapsed && (
-        <div
-          className={`px-4 py-3 text-xs ${
-            isDark ? 'text-gray-600' : 'text-gray-400'
-          }`}
-        >
-          v1.0.0
+          </span>}
         </div>
-      )}
-    </aside>
-  )
+        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const active = location.pathname === item.path || item.path !== "/" && location.pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
+                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}>
+                {active && <div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full gradient-primary" />}
+                <item.icon className="h-5 w-5 shrink-0" />
+                {!collapsed && <span>
+                  {item.label}
+                </span>}
+                {item.label === "Notifications" && unreadCount > 0 && <span
+                  className={cn(
+                    "flex items-center justify-center h-5 min-w-[20px] rounded-full text-[11px] font-semibold gradient-primary text-primary-foreground",
+                    collapsed ? "absolute -top-1 -right-1" : "ml-auto"
+                  )}>
+                  {unreadCount}
+                </span>}
+              </Link>
+            );
+          })}
+        </nav>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="h-12 flex items-center justify-center border-t border-sidebar-border text-muted-foreground hover:text-foreground transition-colors">
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
+      </aside>
+      <aside
+        className={cn(
+          "fixed left-0 top-0 h-screen w-[280px] flex flex-col border-r border-sidebar-border bg-sidebar z-50 transition-transform duration-300 lg:hidden",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}>
+        <div
+          className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
+          <div className="flex items-center gap-3">
+            <Package className="h-7 w-7 text-primary shrink-0" />
+            <span className="text-lg font-bold text-foreground tracking-tight">
+              OrderFlow
+            </span>
+          </div>
+          <button
+            onClick={onMobileClose}
+            className="p-2 rounded-xl hover:bg-muted/50 transition-colors">
+            <X className="h-5 w-5 text-muted-foreground" />
+          </button>
+        </div>
+        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const active = location.pathname === item.path || item.path !== "/" && location.pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={onMobileClose}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
+                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}>
+                {active && <div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full gradient-primary" />}
+                <item.icon className="h-5 w-5 shrink-0" />
+                <span>
+                  {item.label}
+                </span>
+                {item.label === "Notifications" && unreadCount > 0 && <span
+                  className="flex items-center justify-center h-5 min-w-[20px] rounded-full text-[11px] font-semibold gradient-primary text-primary-foreground ml-auto">
+                  {unreadCount}
+                </span>}
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+    </Fragment>
+  );
 }
-
-export default Sidebar
+export default Sidebar;

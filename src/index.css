@@ -1,112 +1,184 @@
-/* ─────────────────────────────────────────────
-   src/index.css
-   Global styles + CSS custom properties
-   Tailwind dark: prefix is class-based (set on <html>)
-───────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 224 50% 13%;
 
-/* Tell Tailwind to use class-based dark mode */
-@custom-variant dark (&:where(.dark, .dark *));
+    --card: 0 0% 100%;
+    --card-foreground: 224 50% 13%;
 
-/* ── Light mode tokens ───────────────────── */
-:root {
-  --bg-primary:    #ffffff;
-  --bg-secondary:  #f8f9fc;
-  --bg-tertiary:   #f1f3f9;
-  --bg-card:       #ffffff;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 50% 13%;
 
-  --text-primary:   #0f1117;
-  --text-secondary: #4b5280;
-  --text-muted:     #8b93b8;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
 
-  --border-default: #e2e6f3;
-  --border-strong:  #c8cde6;
+    --secondary: 220 14% 93%;
+    --secondary-foreground: 224 50% 13%;
 
-  --accent:        #7c6ff7;
-  --accent-hover:  #6a5ef0;
-  --accent-subtle: #eeedfe;
+    --muted: 220 14% 93%;
+    --muted-foreground: 215 16% 47%;
 
-  --success:       #059669;
-  --success-bg:    #ecfdf5;
-  --warning:       #d97706;
-  --warning-bg:    #fffbeb;
-  --danger:        #dc2626;
-  --danger-bg:     #fef2f2;
-  --info:          #2563eb;
-  --info-bg:       #eff6ff;
+    --accent: 263 70% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 16% 47%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 224 50% 13%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 239 84% 67%;
+
+    /* Custom tokens */
+    --success: 152 69% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    --surface-0: 220 20% 97%;
+    --surface-1: 0 0% 100%;
+    --surface-2: 220 14% 96%;
+    --surface-3: 220 13% 91%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(263 70% 58%));
+    --gradient-success: linear-gradient(135deg, hsl(152 69% 40%), hsl(166 72% 35%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 14% 98%));
+  }
+
+  .dark {
+    --background: 222 47% 9%;
+    --foreground: 210 40% 98%;
+
+    --card: 224 50% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 224 50% 13%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 224 50% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 224 30% 20%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 263 70% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 100% / 0.06;
+    --input: 224 30% 20%;
+    --ring: 239 84% 67%;
+
+    --sidebar-background: 224 55% 8%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 224 50% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 0 0% 100% / 0.06;
+    --sidebar-ring: 239 84% 67%;
+
+    --success: 152 69% 53%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    --surface-0: 222 47% 9%;
+    --surface-1: 224 50% 13%;
+    --surface-2: 224 50% 18%;
+    --surface-3: 224 30% 24%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(263 70% 58%));
+    --gradient-success: linear-gradient(135deg, hsl(152 69% 53%), hsl(166 72% 45%));
+    --gradient-card: linear-gradient(135deg, hsl(224 50% 13%), hsl(224 50% 16%));
+  }
 }
 
-/* ── Dark mode tokens ────────────────────── */
-.dark {
-  --bg-primary:    #0f1117;
-  --bg-secondary:  #1a1d27;
-  --bg-tertiary:   #222638;
-  --bg-card:       #1a1d27;
+@layer base {
+  * {
+    @apply border-border;
+  }
 
-  --text-primary:   #e8eaf6;
-  --text-secondary: #9da5c7;
-  --text-muted:     #6b74a0;
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
 
-  --border-default: #2a2f45;
-  --border-strong:  #363d5c;
-
-  --accent:        #7c6ff7;
-  --accent-hover:  #8b7ff8;
-  --accent-subtle: #2a2660;
-
-  --success:       #22c997;
-  --success-bg:    #0a4f3c;
-  --warning:       #f59e0b;
-  --warning-bg:    #451a03;
-  --danger:        #ef4444;
-  --danger-bg:     #450a0a;
-  --info:          #60a5fa;
-  --info-bg:       #1e3a5f;
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
 }
 
-/* ── Base resets ─────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer utilities {
+  .glass-card {
+    @apply bg-card border border-border rounded-2xl shadow-lg shadow-black/5;
+  }
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
 }
 
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-  transition: background-color 0.2s ease, color 0.2s ease;
-  line-height: 1.6;
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-/* ── Scrollbar styling ───────────────────── */
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: var(--border-strong); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-/* ── Selection color ─────────────────────── */
-::selection {
-  background: var(--accent);
-  color: #ffffff;
-}
-
-/* ── Smooth transitions on theme change ─── */
-*, *::before, *::after {
-  transition-property: background-color, border-color, color;
-  transition-duration: 0.15s;
-  transition-timing-function: ease;
-}
-
-/* Exception: don't animate transforms/opacity with that rule */
-svg, img, button {
-  transition: none;
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

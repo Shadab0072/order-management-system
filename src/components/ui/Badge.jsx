@@ -1,10 +1,21 @@
-export const Badge = ({ children, bg, text, colorStyle, className = '' }) => {
-  return (
-    <span
-      className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 w-fit ${className}`}
-      style={colorStyle ? colorStyle : { backgroundColor: bg, color: text }}
-    >
-      {children}
-    </span>
-  )
+import * as React from "react";
+import { cn } from "@/lib/cn";
+
+const baseBadgeClasses =
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
+
+const badgeVariantClasses = {
+  default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+  secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+  destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+  outline: "text-foreground",
+};
+
+const badgeVariants = ({ variant } = { variant: "default" }) =>
+  cn(baseBadgeClasses, badgeVariantClasses[variant] ?? badgeVariantClasses.default);
+
+function Badge({ className, variant = "default", ...props }) {
+  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
+
+export { Badge, badgeVariants };
