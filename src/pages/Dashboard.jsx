@@ -12,6 +12,38 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useOrders } from "@/context/OrderContext";
 import { cn } from "@/lib/cn";
 import { Link } from "react-router-dom";
+function ThemedTooltip({ active, payload, label, formatter }) {
+  if (!active || !payload?.length) return null;
+  const items = payload.filter((p) => p && p.value != null);
+  if (!items.length) return null;
+  return (
+    <div className="rounded-xl border border-border bg-popover text-popover-foreground shadow-md px-3 py-2 text-xs">
+      {label != null && (
+        <div className="mb-1 text-[11px] text-muted-foreground">
+          {label}
+        </div>
+      )}
+      <div className="space-y-0.5">
+        {items.map((item, idx) => {
+          const rawName = item.name ?? item.dataKey ?? "Value";
+          const [value, name] = typeof formatter === "function"
+            ? formatter(item.value, rawName, item, idx, payload)
+            : [item.value, rawName];
+          return (
+            <div key={`${rawName}-${idx}`} className="flex items-center justify-between gap-3">
+              <span className="text-muted-foreground">
+                {name}
+              </span>
+              <span className="font-medium text-foreground">
+                {value}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 const statusColors = {
   pending: "text-warning",
   in_progress: "text-info",
@@ -111,7 +143,12 @@ function Dashboard() {
                 tickFormatter={(v) => `₹${v}`}
                 width={45} />
               <Tooltip
-                contentStyle={{ background: "hsl(224 50% 13%)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
+                content={(props) => (
+                  <ThemedTooltip
+                    {...props}
+                    formatter={(value) => [`₹${value}`, "Revenue"]}
+                  />
+                )}
                 formatter={(value) => [`₹${value}`, "Revenue"]} />
               <Area
                 type="monotone"
@@ -140,7 +177,12 @@ function Dashboard() {
                 {donutData.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i]} />)}
               </Pie>
               <Tooltip
-                contentStyle={{ background: "hsl(224 50% 13%)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", color: "#fff", fontSize: "12px" }} />
+                content={(props) => (
+                  <ThemedTooltip
+                    {...props}
+                    formatter={(value, name) => [`${value}`, name]}
+                  />
+                )} />
             </PieChart>
           </ResponsiveContainer>
           <div className="grid grid-cols-2 gap-2 mt-2">

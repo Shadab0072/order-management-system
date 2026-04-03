@@ -16,10 +16,14 @@ import { cn } from "@/lib/cn";
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Orders", icon: ShoppingCart, path: "/orders" },
-  { label: "Kanban", icon: Columns3, path: "/kanban" },
+  { label: "Track", icon: Columns3, path: "/kanban" },
   { label: "New Order", icon: Plus, path: "/orders/new" },
   { label: "Notifications", icon: Bell, path: "/notifications" }
 ];
+function isNavItemActive(itemPath, pathname) {
+  if (itemPath === "/") return pathname === "/";
+  return pathname === itemPath;
+}
 function Sidebar({ mobileOpen, onMobileClose }) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
@@ -44,7 +48,7 @@ function Sidebar({ mobileOpen, onMobileClose }) {
         </div>
         <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const active = location.pathname === item.path || item.path !== "/" && location.pathname.startsWith(item.path);
+            const active = isNavItemActive(item.path, location.pathname);
             return (
               <Link
                 key={item.path}
@@ -97,7 +101,7 @@ function Sidebar({ mobileOpen, onMobileClose }) {
         </div>
         <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const active = location.pathname === item.path || item.path !== "/" && location.pathname.startsWith(item.path);
+            const active = isNavItemActive(item.path, location.pathname);
             return (
               <Link
                 key={item.path}

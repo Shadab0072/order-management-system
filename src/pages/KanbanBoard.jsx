@@ -302,12 +302,14 @@ function KanbanBoard() {
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-3 gap-4 lg:gap-6 min-h-[600px]">
+          <div className="px-1 lg:px-2">
+            <div className="grid grid-cols-3 gap-6 lg:gap-8 xl:gap-10 min-h-[600px]">
             {columns.map((col) => <DroppableColumn
               key={col.status}
               col={col}
               orders={grouped[col.status]}
               isOver={overColumn === col.status} />)}
+            </div>
           </div>
           <DragOverlay dropAnimation={{ duration: 200, easing: "ease" }}>
             {activeOrder ? <OverlayCard order={activeOrder} /> : null}

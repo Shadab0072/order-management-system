@@ -7,7 +7,7 @@ import { useState } from "react";
 const pageTitles = {
   "/": "Dashboard",
   "/orders": "Orders",
-  "/kanban": "Kanban Board",
+  "/kanban": "Order Tracking",
   "/orders/new": "Create Order",
   "/notifications": "Notifications"
 };
@@ -32,7 +32,7 @@ function Topbar({ onMenuToggle }) {
         </h1>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
-        <div className="relative hidden md:block">
+        {/* <div className="relative hidden md:block">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -41,7 +41,7 @@ function Topbar({ onMenuToggle }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-48 lg:w-64 h-9 pl-9 pr-4 rounded-xl bg-surface-1 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" />
-        </div>
+        </div> */}
         <button
           onClick={toggleTheme}
           className="p-2 rounded-xl hover:bg-muted transition-colors"
