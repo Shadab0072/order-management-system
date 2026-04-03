@@ -161,12 +161,12 @@ function OrderDetails() {
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {item.quantity}
-                  {" \xD7 $"}
+                  {" \xD7 ₹"}
                   {item.price.toFixed(2)}
                 </p>
               </div>
               <span className="text-sm font-medium text-foreground">
-                $
+                ₹
                 {(item.price * item.quantity).toFixed(2)}
               </span>
             </div>)}
@@ -175,7 +175,7 @@ function OrderDetails() {
                 Total
               </span>
               <span className="text-lg font-bold gradient-text">
-                $
+                ₹
                 {order.amount.toLocaleString()}
               </span>
             </div>
@@ -206,11 +206,11 @@ function OrderDetails() {
                   {item.quantity}
                 </td>
                 <td className="py-3 text-right text-muted-foreground">
-                  $
+                  ₹
                   {item.price.toFixed(2)}
                 </td>
                 <td className="py-3 text-right font-medium text-foreground">
-                  $
+                  ₹
                   {(item.price * item.quantity).toFixed(2)}
                 </td>
               </tr>)}
@@ -221,7 +221,7 @@ function OrderDetails() {
                   Total
                 </td>
                 <td className="pt-4 text-right text-lg font-bold gradient-text">
-                  $
+                  ₹
                   {order.amount.toLocaleString()}
                 </td>
               </tr>

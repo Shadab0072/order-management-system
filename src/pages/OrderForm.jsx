@@ -284,7 +284,7 @@ function OrderForm() {
                   </div>
                   <div className="flex items-center gap-2 pb-0.5">
                     <span className="text-sm font-medium text-foreground whitespace-nowrap">
-                      $
+                      ₹
                       {(item.price * item.quantity).toFixed(2)}
                     </span>
                     {items.length > 1 && <button
@@ -332,7 +332,7 @@ function OrderForm() {
                 </div>
                 <div className="col-span-2 flex items-center justify-end gap-2">
                   <span className="text-sm font-medium text-foreground">
-                    $
+                    ₹
                     {(item.price * item.quantity).toFixed(2)}
                   </span>
                   {items.length > 1 && <button
@@ -351,7 +351,7 @@ function OrderForm() {
                 {"Total: "}
               </span>
               <span className="text-xl font-bold gradient-text">
-                $
+                ₹
                 {total.toFixed(2)}
               </span>
             </div>
@@ -455,7 +455,7 @@ function OrderForm() {
                   </span>
                 </div>
                 <span className="text-sm font-medium text-foreground">
-                  $
+                  ₹
                   {(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>)}
@@ -466,7 +466,7 @@ function OrderForm() {
                   {"Total: "}
                 </span>
                 <span className="text-xl font-bold gradient-text">
-                  $
+                  ₹
                   {total.toFixed(2)}
                 </span>
               </div>

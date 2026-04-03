@@ -108,11 +108,11 @@ function Dashboard() {
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(v) => `$${v}`}
+                tickFormatter={(v) => `₹${v}`}
                 width={45} />
               <Tooltip
                 contentStyle={{ background: "hsl(224 50% 13%)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
-                formatter={(value) => [`$${value}`, "Revenue"]} />
+                formatter={(value) => [`₹${value}`, "Revenue"]} />
               <Area
                 type="monotone"
                 dataKey="revenue"
@@ -183,7 +183,7 @@ function Dashboard() {
                   {order.customer.name}
                 </span>
                 <span className="text-sm font-medium text-foreground">
-                  $
+                  ₹
                   {order.amount.toLocaleString()}
                 </span>
               </div>
@@ -254,7 +254,7 @@ function Dashboard() {
                   </span>
                 </td>
                 <td className="py-3 px-4 sm:px-6 text-right font-medium text-foreground">
-                  $
+                  ₹
                   {order.amount.toLocaleString()}
                 </td>
                 <td

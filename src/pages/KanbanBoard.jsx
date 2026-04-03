@@ -72,7 +72,7 @@ function SortableCard({ order, colStatus }) {
           </p>
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-foreground">
-              $
+              ₹
               {order.amount.toLocaleString()}
             </span>
             <div
@@ -206,7 +206,7 @@ function MobileKanban({
           </p>
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-foreground">
-              $
+              ₹
               {order.amount.toLocaleString()}
             </span>
             <div className="flex gap-1">

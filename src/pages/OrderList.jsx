@@ -139,7 +139,7 @@ function OrderList() {
               </span>
             </div>
             <span className="text-sm font-medium text-foreground">
-              $
+              ₹
               {order.amount.toLocaleString()}
             </span>
           </div>
@@ -243,7 +243,7 @@ function OrderList() {
                   </div>
                 </td>
                 <td className="py-3 px-4 lg:px-6 text-right font-medium text-foreground">
-                  $
+                  ₹
                   {order.amount.toLocaleString()}
                 </td>
                 <td
