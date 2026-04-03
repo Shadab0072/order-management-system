@@ -28,6 +28,7 @@ function OrderForm() {
   });
   const [orderDate, setOrderDate] = useState(existing ? new Date(existing.date) : new Date());
   const [priority, setPriority] = useState(existing?.priority || "medium");
+  const [customerErrors, setCustomerErrors] = useState({});
   const [items, setItems] = useState(existing?.items || [
     { id: "1", name: "", quantity: 1, price: 0 }
   ]);
@@ -42,13 +43,52 @@ function OrderForm() {
   const updateItem = (itemId, field, value) => {
     setItems(items.map((i) => i.id === itemId ? { ...i, [field]: value } : i));
   };
+  const validateCustomer = () => {
+    const errors = {};
+    const name = customer.name.trim();
+    const email = customer.email.trim();
+    const phone = customer.phone.trim();
+    const address = customer.address.trim();
+    const city = customer.city.trim();
+    const state = customer.state.trim();
+    const zip = customer.zip.trim();
+    if (!name) errors.name = "Name is required";
+    else if (name.length < 2) errors.name = "Name must be at least 2 characters";
+    if (!email) errors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email address";
+    if (!phone) errors.phone = "Phone is required";
+    else if (!/^\+?[\d\s-]{10,15}$/.test(phone)) errors.phone = "Enter a valid phone number";
+    if (!address) errors.address = "Address is required";
+    else if (address.length < 5) errors.address = "Address must be at least 5 characters";
+    if (!city) errors.city = "City is required";
+    if (!state) errors.state = "State is required";
+    if (!zip) errors.zip = "ZIP is required";
+    else if (!/^\d{6}$/.test(zip)) errors.zip = "ZIP must be a 6-digit code";
+    return errors;
+  };
+  const updateCustomerField = (field, value) => {
+    setCustomer((prev) => ({ ...prev, [field]: value }));
+    if (customerErrors[field]) {
+      setCustomerErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
   const canNext = () => {
-    if (step === 0) return !!customer.name && !!customer.email;
+    if (step === 0) return true;
     if (step === 1) return items.every((i) => !!i.name && i.quantity > 0);
     return true;
   };
+  const handleNext = () => {
+    if (step === 0) {
+      const errors = validateCustomer();
+      setCustomerErrors(errors);
+      if (Object.keys(errors).length > 0) return;
+    }
+    if (canNext()) setStep(step + 1);
+  };
   const handleSubmit = () => {
-    if (!customer.name || !customer.email || items.some((i) => !i.name)) return;
+    const errors = validateCustomer();
+    setCustomerErrors(errors);
+    if (Object.keys(errors).length > 0 || items.some((i) => !i.name)) return;
     if (existing) {
       updateOrder(existing.id, { customer, priority, items, amount: Math.round(total * 100) / 100 });
     } else {
@@ -117,31 +157,40 @@ function OrderForm() {
                 Name *
               </label>
               <input
-                className={inputClass}
+                className={cn(inputClass, customerErrors.name && "border-destructive focus:ring-destructive/30")}
                 value={customer.name}
-                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                onChange={(e) => updateCustomerField("name", e.target.value)}
                 placeholder="John Doe" />
+              {customerErrors.name && <p className="text-xs text-destructive mt-1">
+                {customerErrors.name}
+              </p>}
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
                 Email *
               </label>
               <input
-                className={inputClass}
+                className={cn(inputClass, customerErrors.email && "border-destructive focus:ring-destructive/30")}
                 type="email"
                 value={customer.email}
-                onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                onChange={(e) => updateCustomerField("email", e.target.value)}
                 placeholder="john@gmail.com" />
+              {customerErrors.email && <p className="text-xs text-destructive mt-1">
+                {customerErrors.email}
+              </p>}
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
-                Phone
+                Phone *
               </label>
               <input
-                className={inputClass}
+                className={cn(inputClass, customerErrors.phone && "border-destructive focus:ring-destructive/30")}
                 value={customer.phone}
-                onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                onChange={(e) => updateCustomerField("phone", e.target.value)}
                 placeholder="+91 98765 XXXXX" />
+              {customerErrors.phone && <p className="text-xs text-destructive mt-1">
+                {customerErrors.phone}
+              </p>}
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
@@ -190,44 +239,56 @@ function OrderForm() {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
-                Address
+                Address *
               </label>
               <input
-                className={inputClass}
+                className={cn(inputClass, customerErrors.address && "border-destructive focus:ring-destructive/30")}
                 value={customer.address}
-                onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+                onChange={(e) => updateCustomerField("address", e.target.value)}
                 placeholder="120F VIP Road XXXX" />
+              {customerErrors.address && <p className="text-xs text-destructive mt-1">
+                {customerErrors.address}
+              </p>}
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
-                City
+                City *
               </label>
               <input
-                className={inputClass}
+                className={cn(inputClass, customerErrors.city && "border-destructive focus:ring-destructive/30")}
                 value={customer.city}
-                onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
+                onChange={(e) => updateCustomerField("city", e.target.value)}
                 placeholder="Lucknow" />
+              {customerErrors.city && <p className="text-xs text-destructive mt-1">
+                {customerErrors.city}
+              </p>}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  State
+                  State *
                 </label>
                 <input
-                  className={inputClass}
+                  className={cn(inputClass, customerErrors.state && "border-destructive focus:ring-destructive/30")}
                   value={customer.state}
-                  onChange={(e) => setCustomer({ ...customer, state: e.target.value })}
+                  onChange={(e) => updateCustomerField("state", e.target.value)}
                   placeholder="UP" />
+                {customerErrors.state && <p className="text-xs text-destructive mt-1">
+                  {customerErrors.state}
+                </p>}
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  ZIP
+                  ZIP *
                 </label>
                 <input
-                  className={inputClass}
+                  className={cn(inputClass, customerErrors.zip && "border-destructive focus:ring-destructive/30")}
                   value={customer.zip}
-                  onChange={(e) => setCustomer({ ...customer, zip: e.target.value })}
+                  onChange={(e) => updateCustomerField("zip", e.target.value)}
                   placeholder="10XXXX" />
+                {customerErrors.zip && <p className="text-xs text-destructive mt-1">
+                  {customerErrors.zip}
+                </p>}
               </div>
             </div>
           </div>
@@ -484,7 +545,7 @@ function OrderForm() {
         </button>
         {step < 2 ? <button
           type="button"
-          onClick={() => canNext() && setStep(step + 1)}
+          onClick={handleNext}
           disabled={!canNext()}
           className="h-10 px-6 rounded-xl gradient-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
           {"Next "}
