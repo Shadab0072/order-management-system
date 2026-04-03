@@ -131,7 +131,7 @@ function OrderForm() {
                 type="email"
                 value={customer.email}
                 onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                placeholder="john@example.com" />
+                placeholder="john@gmail.com" />
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
@@ -141,7 +141,7 @@ function OrderForm() {
                 className={inputClass}
                 value={customer.phone}
                 onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                placeholder="+1 555-0100" />
+                placeholder="+91 98765 XXXXX" />
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
@@ -196,7 +196,7 @@ function OrderForm() {
                 className={inputClass}
                 value={customer.address}
                 onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
-                placeholder="123 Main St" />
+                placeholder="120F VIP Road XXXX" />
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
@@ -206,7 +206,7 @@ function OrderForm() {
                 className={inputClass}
                 value={customer.city}
                 onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                placeholder="San Francisco" />
+                placeholder="Lucknow" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -217,7 +217,7 @@ function OrderForm() {
                   className={inputClass}
                   value={customer.state}
                   onChange={(e) => setCustomer({ ...customer, state: e.target.value })}
-                  placeholder="CA" />
+                  placeholder="UP" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
@@ -227,7 +227,7 @@ function OrderForm() {
                   className={inputClass}
                   value={customer.zip}
                   onChange={(e) => setCustomer({ ...customer, zip: e.target.value })}
-                  placeholder="94102" />
+                  placeholder="10XXXX" />
               </div>
             </div>
           </div>
