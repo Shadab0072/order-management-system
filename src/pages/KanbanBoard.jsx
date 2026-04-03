@@ -7,6 +7,7 @@ import {
   DragOverlay,
   PointerSensor,
   TouchSensor,
+  useDroppable,
   useSensor,
   useSensors,
   closestCorners
@@ -30,6 +31,7 @@ const priorityDot = {
   urgent: "bg-destructive"
 };
 function SortableCard({ order, colStatus }) {
+  const { updateOrder } = useOrders();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: order.id,
     data: { status: colStatus }
@@ -80,6 +82,7 @@ function SortableCard({ order, colStatus }) {
               {columns.filter((c) => c.status !== colStatus).map((c) => <button
                 key={c.status}
                 onClick={() => {
+                  updateOrder(String(order.id), { status: c.status });
                 }}
                 className="hidden sm:block px-2 py-1 text-[10px] font-medium rounded-md bg-surface-2 text-muted-foreground hover:text-foreground hover:bg-surface-3 transition-colors">
                 {"\u2192 "}
@@ -125,6 +128,11 @@ function DroppableColumn({
   orders,
   isOver
 }) {
+  const { setNodeRef, isOver: isDirectlyOver } = useDroppable({
+    id: col.status,
+    data: { status: col.status }
+  });
+  const over = isOver ?? isDirectlyOver;
   return (
     <div
       className={cn(
@@ -141,14 +149,15 @@ function DroppableColumn({
         </span>
       </div>
       <div
+        ref={setNodeRef}
         className={cn(
           "flex-1 space-y-2 sm:space-y-3 rounded-xl p-2 transition-colors min-h-[120px]",
-          isOver ? "bg-primary/5 ring-2 ring-primary/20 ring-dashed" : "bg-transparent"
+          over ? "bg-primary/5 ring-2 ring-primary/20 ring-dashed" : "bg-transparent"
         )}>
         <SortableContext items={orders.map((o) => o.id)} strategy={verticalListSortingStrategy}>
           {orders.map((order) => <SortableCard key={order.id} order={order} colStatus={col.status} />)}
         </SortableContext>
-        {orders.length === 0 && !isOver && <div className="glass-card p-6 flex items-center justify-center">
+        {orders.length === 0 && !over && <div className="glass-card p-6 flex items-center justify-center">
           <p className="text-sm text-muted-foreground">
             Drop orders here
           </p>
