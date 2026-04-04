@@ -174,20 +174,20 @@ function MobileKanban({
 }) {
   return (
     <div className="md:hidden space-y-3">
-      <div className="flex gap-1 p-1 rounded-xl bg-surface-2">
+      <div className="flex gap-0.5 p-1 rounded-xl bg-surface-2 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {columns.map((col) => <button
           key={col.status}
           onClick={() => setActiveTab(col.status)}
           className={cn(
-            "flex-1 py-2 px-2 rounded-lg text-xs font-medium transition-all text-center",
+            "flex-1 basis-0 min-w-[6.75rem] shrink-0 py-2 px-1.5 rounded-lg text-[10px] font-medium transition-all text-center sm:min-w-0 sm:shrink sm:px-2 sm:text-xs",
             activeTab === col.status ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
           )}>
-          <div className="flex items-center justify-center gap-1.5">
-            <div className={cn("h-2 w-2 rounded-full", col.color)} />
+          <div className="flex items-center justify-center gap-1 whitespace-nowrap">
+            <div className={cn("h-2 w-2 shrink-0 rounded-full", col.color)} />
             <span>
               {col.label}
             </span>
-            <span className="text-[10px] opacity-60">
+            <span className="shrink-0 text-[9px] opacity-60 sm:text-[10px]">
               (
               {grouped[col.status].length}
               )

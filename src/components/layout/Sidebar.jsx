@@ -24,8 +24,22 @@ function isNavItemActive(itemPath, pathname) {
   if (itemPath === "/") return pathname === "/";
   return pathname === itemPath;
 }
-function Sidebar({ mobileOpen, onMobileClose }) {
-  const [collapsed, setCollapsed] = useState(false);
+function Sidebar({
+  mobileOpen,
+  onMobileClose,
+  collapsed: collapsedProp,
+  onCollapsedChange
+}) {
+  const [collapsedInternal, setCollapsedInternal] = useState(false);
+  const controlled = typeof onCollapsedChange === "function";
+  const collapsed = controlled ? Boolean(collapsedProp) : collapsedInternal;
+  const toggleCollapsed = () => {
+    if (controlled) {
+      onCollapsedChange(!collapsedProp);
+    } else {
+      setCollapsedInternal((c) => !c);
+    }
+  };
   const location = useLocation();
   const { unreadCount } = useOrders();
   return (
@@ -75,7 +89,8 @@ function Sidebar({ mobileOpen, onMobileClose }) {
           })}
         </nav>
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          type="button"
+          onClick={toggleCollapsed}
           className="h-12 flex items-center justify-center border-t border-sidebar-border text-muted-foreground hover:text-foreground transition-colors">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>

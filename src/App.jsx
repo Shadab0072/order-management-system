@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { OrderProvider } from "@/context/OrderContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AppLayout from "@/components/layout/AppLayout";
+import Offline from "@/pages/Offline";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import {
   DashboardPageSkeleton,
   KanbanPageSkeleton,
@@ -26,82 +28,94 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
 
+const AppRoutes = () => {
+  const online = useOnlineStatus();
+
+  if (!online) {
+    return <Offline />;
+  }
+
+  return (
+    <OrderProvider>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route
+            path="/"
+            element={
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <Dashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <Suspense fallback={<OrderListPageSkeleton />}>
+                <OrderList />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/orders/new"
+            element={
+              <Suspense fallback={<OrderFormPageSkeleton />}>
+                <OrderForm />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/orders/:id"
+            element={
+              <Suspense fallback={<OrderDetailsPageSkeleton />}>
+                <OrderDetails />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/orders/:id/edit"
+            element={
+              <Suspense fallback={<OrderFormPageSkeleton />}>
+                <OrderForm />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/kanban"
+            element={
+              <Suspense fallback={<KanbanPageSkeleton />}>
+                <KanbanBoard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <Suspense fallback={<NotificationsPageSkeleton />}>
+                <Notifications />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="*"
+          element={
+            <Suspense fallback={<NotFoundPageSkeleton />}>
+              <NotFound />
+            </Suspense>
+          }
+        />
+      </Routes>
+    </OrderProvider>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
         <Sonner />
         <BrowserRouter>
-          <OrderProvider>
-            <Routes>
-              <Route element={<AppLayout />}>
-                <Route
-                  path="/"
-                  element={
-                    <Suspense fallback={<DashboardPageSkeleton />}>
-                      <Dashboard />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/orders"
-                  element={
-                    <Suspense fallback={<OrderListPageSkeleton />}>
-                      <OrderList />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/orders/new"
-                  element={
-                    <Suspense fallback={<OrderFormPageSkeleton />}>
-                      <OrderForm />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/orders/:id"
-                  element={
-                    <Suspense fallback={<OrderDetailsPageSkeleton />}>
-                      <OrderDetails />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/orders/:id/edit"
-                  element={
-                    <Suspense fallback={<OrderFormPageSkeleton />}>
-                      <OrderForm />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/kanban"
-                  element={
-                    <Suspense fallback={<KanbanPageSkeleton />}>
-                      <KanbanBoard />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/notifications"
-                  element={
-                    <Suspense fallback={<NotificationsPageSkeleton />}>
-                      <Notifications />
-                    </Suspense>
-                  }
-                />
-              </Route>
-              <Route
-                path="*"
-                element={
-                  <Suspense fallback={<NotFoundPageSkeleton />}>
-                    <NotFound />
-                  </Suspense>
-                }
-              />
-            </Routes>
-          </OrderProvider>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
