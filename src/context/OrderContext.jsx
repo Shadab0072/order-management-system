@@ -22,7 +22,8 @@ const sampleCustomers = [
   { name: "Lisa Anderson", email: "lisa@example.com", phone: "+1 555-0105", address: "654 Maple Rd", city: "Chicago", state: "IL", zip: "60601" },
   { name: "David Kim", email: "david@example.com", phone: "+1 555-0106", address: "987 Birch Ct", city: "Denver", state: "CO", zip: "80201" },
   { name: "Anna Martinez", email: "anna@example.com", phone: "+1 555-0107", address: "147 Walnut Way", city: "Miami", state: "FL", zip: "33101" },
-  { name: "Robert Taylor", email: "robert@example.com", phone: "+1 555-0108", address: "258 Spruce Pl", city: "Portland", state: "OR", zip: "97201" }
+  { name: "Robert Taylor", email: "robert@example.com", phone: "+1 555-0108", address: "258 Spruce Pl", city: "Portland", state: "OR", zip: "97201" },
+  
 ];
 const sampleItems = [
   [{ id: "1", name: 'MacBook Pro 16"', quantity: 1, price: 2499 }, { id: "2", name: "USB-C Hub", quantity: 2, price: 49.99 }],

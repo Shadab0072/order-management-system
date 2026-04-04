@@ -120,7 +120,7 @@ const DialogContent = forwardRef(({ className, children, hideClose, ...props }, 
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 pt-6 pb-10 sm:p-6 sm:pb-12">
           <DialogOverlay onClick={() => setOpen(false)} />
           <motion.div
             ref={ref}
@@ -131,7 +131,7 @@ const DialogContent = forwardRef(({ className, children, hideClose, ...props }, 
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.15 }}
             className={cn(
-              "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg sm:rounded-lg",
+              "relative left-auto top-auto z-50 my-auto grid w-full max-w-lg max-h-[min(90vh,calc(100vh-4rem))] translate-x-0 translate-y-0 gap-4 overflow-y-auto border bg-background p-6 shadow-lg sm:rounded-lg",
               className
             )}
             onClick={(e) => e.stopPropagation()}

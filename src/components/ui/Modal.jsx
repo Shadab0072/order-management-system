@@ -20,9 +20,16 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div 
-        className={`relative w-full max-w-md p-6 rounded-2xl shadow-xl transition-all ${
+    <div
+      role="presentation"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-6 pb-10 sm:p-6 sm:pb-12 bg-black/50 backdrop-blur-sm overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+        className={`relative w-full max-w-md max-h-[min(90vh,calc(100vh-4rem))] overflow-y-auto p-6 rounded-2xl shadow-xl transition-all my-auto ${
           isDark ? 'bg-gray-900 border border-gray-800 text-white' : 'bg-white border border-gray-200 text-gray-900'
         }`}
       >

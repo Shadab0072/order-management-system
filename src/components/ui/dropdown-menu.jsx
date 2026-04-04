@@ -8,6 +8,7 @@ import {
   forwardRef,
   cloneElement,
   isValidElement,
+  useCallback,
 } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -52,21 +53,35 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
 
 const DropdownMenuPortal = ({ children }) => children;
 
-const DropdownMenuContent = forwardRef(({ className, sideOffset = 4, children, ...props }, ref) => {
+const DropdownMenuContent = forwardRef(({ className, sideOffset = 4, align = "start", children, ...props }, ref) => {
   const ctx = useContext(MenuCtx);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const panelRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: undefined, right: undefined });
+
+  const setRefs = useCallback(
+    (node) => {
+      panelRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    },
+    [ref]
+  );
 
   useLayoutEffect(() => {
     if (!ctx?.open || !ctx.triggerRef.current) return;
     const rect = ctx.triggerRef.current.getBoundingClientRect();
-    setPos({ top: rect.bottom + sideOffset, left: rect.left });
-  }, [ctx?.open, sideOffset]);
+    const vw = document.documentElement.clientWidth;
+    if (align === "end") {
+      setPos({ top: rect.bottom + sideOffset, left: undefined, right: vw - rect.right });
+    } else {
+      setPos({ top: rect.bottom + sideOffset, left: rect.left, right: undefined });
+    }
+  }, [ctx?.open, sideOffset, align]);
 
   useLayoutEffect(() => {
     if (!ctx?.open) return;
     const close = (e) => {
-      if (ctx.triggerRef.current?.contains(e.target) || document.getElementById("dropdown-panel")?.contains(e.target))
-        return;
+      if (ctx.triggerRef.current?.contains(e.target) || panelRef.current?.contains(e.target)) return;
       ctx.setOpen(false);
     };
     document.addEventListener("mousedown", close);
@@ -75,17 +90,21 @@ const DropdownMenuContent = forwardRef(({ className, sideOffset = 4, children, .
 
   if (!ctx || typeof document === "undefined") return null;
 
+  const fixedStyle =
+    pos.right != null
+      ? { position: "fixed", top: pos.top, right: pos.right, zIndex: 50 }
+      : { position: "fixed", top: pos.top, left: pos.left, zIndex: 50 };
+
   return createPortal(
     <AnimatePresence>
       {ctx.open && (
         <motion.div
-          id="dropdown-panel"
-          ref={ref}
+          ref={setRefs}
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -4 }}
-          style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 50 }}
-            className={cn(
+          style={fixedStyle}
+          className={cn(
             "min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
             className
           )}
@@ -102,18 +121,25 @@ DropdownMenuContent.displayName = "DropdownMenuContent";
 
 const DropdownMenuGroup = ({ className, ...props }) => <div role="group" className={cn(className)} {...props} />;
 
-const DropdownMenuItem = forwardRef(({ className, inset, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="menuitem"
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-));
+const DropdownMenuItem = forwardRef(({ className, inset, onClick, ...props }, ref) => {
+  const ctx = useContext(MenuCtx);
+  return (
+    <div
+      ref={ref}
+      role="menuitem"
+      className={cn(
+        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        inset && "pl-8",
+        className
+      )}
+      onClick={(e) => {
+        onClick?.(e);
+        ctx?.setOpen(false);
+      }}
+      {...props}
+    />
+  );
+});
 DropdownMenuItem.displayName = "DropdownMenuItem";
 
 const DropdownMenuCheckboxItem = forwardRef(({ className, children, checked, ...props }, ref) => (
