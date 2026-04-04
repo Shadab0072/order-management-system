@@ -209,7 +209,9 @@ export const computeOrderTotal = (items = []) =>
  * @returns {Array}
  */
 export const groupNotificationsByDate = (notifications) => {
-  const now   = new Date();
+  const notifTime = (n) => new Date(n.date ?? n.time ?? 0);
+
+  const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
@@ -217,34 +219,41 @@ export const groupNotificationsByDate = (notifications) => {
   const groups = {};
 
   notifications.forEach((notif) => {
-    const d    = new Date(notif.time);
+    const d = notifTime(notif);
     const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
     let label;
-    if (date.getTime() === today.getTime())     label = "Today";
+    if (date.getTime() === today.getTime()) label = "Today";
     else if (date.getTime() === yesterday.getTime()) label = "Yesterday";
-    else label = d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+    else
+      label = d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
 
     if (!groups[label]) groups[label] = [];
     groups[label].push(notif);
   });
 
-  // Sort within each group newest-first
   Object.values(groups).forEach((group) =>
-    group.sort((a, b) => new Date(b.time) - new Date(a.time))
+    group.sort((a, b) => +notifTime(b) - +notifTime(a))
   );
 
-  // Return as array preserving Today → Yesterday → older order
-  const order = ["Today", "Yesterday"];
+  const fixedOrder = ["Today", "Yesterday"];
   const result = [];
 
-  order.forEach((label) => {
+  fixedOrder.forEach((label) => {
     if (groups[label]) result.push({ label, items: groups[label] });
   });
 
-  Object.keys(groups)
-    .filter((k) => !order.includes(k))
-    .forEach((label) => result.push({ label, items: groups[label] }));
+  const otherLabels = Object.keys(groups).filter((k) => !fixedOrder.includes(k));
+  otherLabels.sort((a, b) => {
+    const maxA = Math.max(...groups[a].map((n) => +notifTime(n)));
+    const maxB = Math.max(...groups[b].map((n) => +notifTime(n)));
+    return maxB - maxA;
+  });
+  otherLabels.forEach((label) => result.push({ label, items: groups[label] }));
 
   return result;
 };

@@ -5,11 +5,16 @@ import {
   Eye,
   Edit,
   XCircle,
+  X,
+  CalendarIcon,
   MoreHorizontal,
   ArrowUp,
   ArrowDown,
   ArrowUpDown
 } from "lucide-react";
+import { format, startOfDay, endOfDay } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useOrders } from "@/context/OrderContext";
 import { cn } from "@/lib/cn";
 import {
@@ -41,12 +46,53 @@ const priorityDot = {
   high: "bg-warning",
   urgent: "bg-destructive"
 };
+const filterDateTriggerClass = "flex min-w-0 flex-1 items-center justify-between gap-1 px-2 sm:px-3 text-left text-sm outline-none transition-colors hover:bg-muted/20";
+function OrderListFilterDate({ label, value, onChange, disabled }) {
+  return (
+    <div
+      className={cn(
+        "flex h-9 w-full min-w-0 sm:w-auto sm:flex-none sm:min-w-[10rem] sm:max-w-[11rem] items-stretch rounded-xl border border-border bg-surface-2 overflow-hidden",
+        "focus-within:ring-2 focus-within:ring-primary/30"
+      )}>
+      <Popover>
+        <PopoverTrigger asChild={true}>
+          <button
+            type="button"
+            className={cn(filterDateTriggerClass, !value && "text-muted-foreground")}>
+            <span className="truncate">
+              {value ? format(value, "PPP") : label}
+            </span>
+            <CalendarIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={onChange}
+            initialFocus={true}
+            disabled={disabled}
+            className="p-3 pointer-events-auto" />
+        </PopoverContent>
+      </Popover>
+      {value ? <button
+        type="button"
+        className="flex shrink-0 items-center border-l border-border px-2 hover:bg-muted/40"
+        onClick={() => onChange(undefined)}
+        aria-label={`Clear ${label}`}>
+        <X className="h-3.5 w-3.5 text-muted-foreground" />
+      </button> : null}
+    </div>
+  );
+}
 function OrderList() {
   const navigate = useNavigate();
   const { orders, cancelOrder } = useOrders();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState();
+  const [dateTo, setDateTo] = useState();
   const [sortField, setSortField] = useState("date");
   const [sortDir, setSortDir] = useState("desc");
   const [page, setPage] = useState(1);
@@ -58,13 +104,21 @@ function OrderList() {
     }
     if (statusFilter !== "all") result = result.filter((o) => o.status === statusFilter);
     if (priorityFilter !== "all") result = result.filter((o) => o.priority === priorityFilter);
+    if (dateFrom) {
+      const fromT = startOfDay(dateFrom).getTime();
+      result = result.filter((o) => new Date(o.date).getTime() >= fromT);
+    }
+    if (dateTo) {
+      const toT = endOfDay(dateTo).getTime();
+      result = result.filter((o) => new Date(o.date).getTime() <= toT);
+    }
     result.sort((a, b) => {
       const mul = sortDir === "asc" ? 1 : -1;
       if (sortField === "date") return mul * (new Date(a.date).getTime() - new Date(b.date).getTime());
       return mul * (a.amount - b.amount);
     });
     return result;
-  }, [orders, search, statusFilter, priorityFilter, sortField, sortDir]);
+  }, [orders, search, statusFilter, priorityFilter, dateFrom, dateTo, sortField, sortDir]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
@@ -74,7 +128,7 @@ function OrderList() {
   const rangeEnd = filtered.length === 0 ? 0 : Math.min(page * PAGE_SIZE, filtered.length);
   useEffect(() => {
     setPage(1);
-  }, [search, statusFilter, priorityFilter, sortField, sortDir]);
+  }, [search, statusFilter, priorityFilter, dateFrom, dateTo, sortField, sortDir]);
   useEffect(() => {
     setPage((p) => Math.min(p, totalPages));
   }, [totalPages]);
@@ -114,11 +168,23 @@ function OrderList() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full h-9 pl-9 pr-4 rounded-xl bg-surface-2 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
-        <div className="flex gap-2 sm:gap-3">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:min-w-0 sm:flex-wrap sm:items-center sm:gap-3">
+          <OrderListFilterDate
+            label="From"
+            value={dateFrom}
+            onChange={setDateFrom}
+            disabled={dateTo ? { after: endOfDay(dateTo) } : undefined} />
+          <OrderListFilterDate
+            label="To"
+            value={dateTo}
+            onChange={setDateTo}
+            disabled={dateFrom ? { before: startOfDay(dateFrom) } : undefined} />
+        </div>
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:min-w-0 sm:flex-wrap sm:items-center sm:gap-3">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="flex-1 sm:flex-none h-9 px-3 rounded-xl bg-surface-2 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+            className="min-w-0 w-full sm:w-auto sm:min-w-[8.5rem] h-9 px-3 rounded-xl bg-surface-2 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
             <option value="all">
               All Status
             </option>
@@ -138,7 +204,7 @@ function OrderList() {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="flex-1 sm:flex-none h-9 px-3 rounded-xl bg-surface-2 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+            className="min-w-0 w-full sm:w-auto sm:min-w-[8.5rem] h-9 px-3 rounded-xl bg-surface-2 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
             <option value="all">
               All Priority
             </option>
@@ -158,7 +224,7 @@ function OrderList() {
         </div>
         <Link
           to="/orders/new"
-          className="h-9 px-4 rounded-xl gradient-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+          className="w-full sm:w-auto shrink-0 h-9 px-4 rounded-xl gradient-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
           + New Order
         </Link>
       </div>
