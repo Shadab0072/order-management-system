@@ -66,6 +66,10 @@ const revenueData = [
   { day: "Sun", revenue: 4300 }
 ];
 const DONUT_COLORS = ["hsl(38 92% 50%)", "hsl(199 89% 48%)", "hsl(152 69% 53%)", "hsl(0 72% 51%)"];
+function shareOfTotal(count, total) {
+  if (total === 0) return 0;
+  return Math.round((count / total) * 100);
+}
 function Dashboard() {
   const { orders } = useOrders();
   const stats = useMemo(() => {
@@ -75,11 +79,11 @@ function Dashboard() {
     const completed = orders.filter((o) => o.status === "completed").length;
     const cancelled = orders.filter((o) => o.status === "cancelled").length;
     return [
-      { label: "Total Orders", value: total, icon: ShoppingCart, trend: "+12%", up: true, color: "text-primary" },
-      { label: "Pending", value: pending, icon: Clock, trend: "+5%", up: true, color: "text-warning" },
-      { label: "In Progress", value: inProgress, icon: Loader2, trend: "-2%", up: false, color: "text-info" },
-      { label: "Completed", value: completed, icon: CheckCircle2, trend: "+18%", up: true, color: "text-success" },
-      { label: "Cancelled", value: cancelled, icon: XCircle, trend: "-8%", up: false, color: "text-destructive" }
+      { label: "Total Orders", value: total, icon: ShoppingCart, trend: null, trendTone: null, color: "text-primary" },
+      { label: "Pending", value: pending, icon: Clock, trend: `${shareOfTotal(pending, total)}%`, trendTone: "muted", color: "text-warning" },
+      { label: "In Progress", value: inProgress, icon: Loader2, trend: `${shareOfTotal(inProgress, total)}%`, trendTone: "muted", color: "text-info" },
+      { label: "Completed", value: completed, icon: CheckCircle2, trend: `${shareOfTotal(completed, total)}%`, trendTone: "success", color: "text-success" },
+      { label: "Cancelled", value: cancelled, icon: XCircle, trend: `${shareOfTotal(cancelled, total)}% lost`, trendTone: "destructive", color: "text-destructive" }
     ];
   }, [orders]);
   const donutData = useMemo(() => [
@@ -101,11 +105,23 @@ function Dashboard() {
           style={{ animationDelay: `${i * 50}ms` }}>
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <s.icon className={cn("h-4 w-4 sm:h-5 sm:w-5", s.color)} />
-            <span
-              className={cn("flex items-center gap-1 text-[10px] sm:text-xs font-medium", s.up ? "text-success" : "text-destructive")}>
-              {s.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-              {s.trend}
-            </span>
+            {s.trend != null ? (
+              <span
+                className={cn(
+                  "flex items-center gap-1 text-[10px] sm:text-xs font-medium",
+                  s.trendTone === "success" && "text-success",
+                  s.trendTone === "destructive" && "text-destructive",
+                  s.trendTone === "muted" && "text-muted-foreground"
+                )}>
+                {s.trendTone === "success" ? <TrendingUp className="h-3 w-3 shrink-0" /> : null}
+                {s.trendTone === "destructive" ? <TrendingDown className="h-3 w-3 shrink-0" /> : null}
+                {s.trend}
+              </span>
+            ) : (
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground tabular-nums" aria-hidden>
+                —
+              </span>
+            )}
           </div>
           <div className="text-xl sm:text-2xl font-bold text-foreground">
             {s.value}

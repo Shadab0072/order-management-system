@@ -30,11 +30,12 @@ function OrderForm() {
   const [priority, setPriority] = useState(existing?.priority || "medium");
   const [customerErrors, setCustomerErrors] = useState({});
   const [items, setItems] = useState(existing?.items || [
-    { id: "1", name: "", quantity: 1, price: 0 }
+    { id: "1", name: "", quantity: 1, price: "" }
   ]);
-  const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const lineTotal = (price, qty) => (Number(price) || 0) * qty;
+  const total = items.reduce((s, i) => s + lineTotal(i.price, i.quantity), 0);
   const addItem = () => {
-    setItems([...items, { id: String(Date.now()), name: "", quantity: 1, price: 0 }]);
+    setItems([...items, { id: String(Date.now()), name: "", quantity: 1, price: "" }]);
   };
   const removeItem = (itemId) => {
     if (items.length <= 1) return;
@@ -89,10 +90,14 @@ function OrderForm() {
     const errors = validateCustomer();
     setCustomerErrors(errors);
     if (Object.keys(errors).length > 0 || items.some((i) => !i.name)) return;
+    const itemsToSave = items.map((i) => ({ ...i, price: Number(i.price) || 0 }));
+    const amount = Math.round(
+      itemsToSave.reduce((s, i) => s + i.price * i.quantity, 0) * 100
+    ) / 100;
     if (existing) {
-      updateOrder(existing.id, { customer, priority, items, amount: Math.round(total * 100) / 100 });
+      updateOrder(existing.id, { customer, priority, items: itemsToSave, amount });
     } else {
-      addOrder({ customer, priority, items, amount: Math.round(total * 100) / 100, status: "pending", notes: [] });
+      addOrder({ customer, priority, items: itemsToSave, amount, status: "pending", notes: [] });
     }
     navigate("/orders");
   };
@@ -187,7 +192,7 @@ function OrderForm() {
                 className={cn(inputClass, customerErrors.phone && "border-destructive focus:ring-destructive/30")}
                 value={customer.phone}
                 onChange={(e) => updateCustomerField("phone", e.target.value)}
-                placeholder="+91 98765 XXXXX" />
+                placeholder="98765XXXXX (10 digits)" />
               {customerErrors.phone && <p className="text-xs text-destructive mt-1">
                 {customerErrors.phone}
               </p>}
@@ -258,7 +263,7 @@ function OrderForm() {
                 className={cn(inputClass, customerErrors.city && "border-destructive focus:ring-destructive/30")}
                 value={customer.city}
                 onChange={(e) => updateCustomerField("city", e.target.value)}
-                placeholder="Lucknow" />
+                placeholder="City Name" />
               {customerErrors.city && <p className="text-xs text-destructive mt-1">
                 {customerErrors.city}
               </p>}
@@ -272,7 +277,7 @@ function OrderForm() {
                   className={cn(inputClass, customerErrors.state && "border-destructive focus:ring-destructive/30")}
                   value={customer.state}
                   onChange={(e) => updateCustomerField("state", e.target.value)}
-                  placeholder="UP" />
+                  placeholder="State Name" />
                 {customerErrors.state && <p className="text-xs text-destructive mt-1">
                   {customerErrors.state}
                 </p>}
@@ -285,7 +290,7 @@ function OrderForm() {
                   className={cn(inputClass, customerErrors.zip && "border-destructive focus:ring-destructive/30")}
                   value={customer.zip}
                   onChange={(e) => updateCustomerField("zip", e.target.value)}
-                  placeholder="10XXXX" />
+                  placeholder="10XXXX (6 digits)" />
                 {customerErrors.zip && <p className="text-xs text-destructive mt-1">
                   {customerErrors.zip}
                 </p>}
@@ -340,13 +345,20 @@ function OrderForm() {
                       type="number"
                       min={0}
                       step={0.01}
-                      value={item.price}
-                      onChange={(e) => updateItem(item.id, "price", parseFloat(e.target.value) || 0)} />
+                      value={item.price === "" ? "" : item.price}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v === "") updateItem(item.id, "price", "");
+                        else {
+                          const n = parseFloat(v);
+                          updateItem(item.id, "price", Number.isFinite(n) ? n : "");
+                        }
+                      }} />
                   </div>
                   <div className="flex items-center gap-2 pb-0.5">
                     <span className="text-sm font-medium text-foreground whitespace-nowrap">
                       ₹
-                      {(item.price * item.quantity).toFixed(2)}
+                      {lineTotal(item.price, item.quantity).toFixed(2)}
                     </span>
                     {items.length > 1 && <button
                       type="button"
@@ -388,13 +400,20 @@ function OrderForm() {
                     type="number"
                     min={0}
                     step={0.01}
-                    value={item.price}
-                    onChange={(e) => updateItem(item.id, "price", parseFloat(e.target.value) || 0)} />
+                    value={item.price === "" ? "" : item.price}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "") updateItem(item.id, "price", "");
+                      else {
+                        const n = parseFloat(v);
+                        updateItem(item.id, "price", Number.isFinite(n) ? n : "");
+                      }
+                    }} />
                 </div>
                 <div className="col-span-2 flex items-center justify-end gap-2">
                   <span className="text-sm font-medium text-foreground">
                     ₹
-                    {(item.price * item.quantity).toFixed(2)}
+                    {lineTotal(item.price, item.quantity).toFixed(2)}
                   </span>
                   {items.length > 1 && <button
                     type="button"
@@ -517,7 +536,7 @@ function OrderForm() {
                 </div>
                 <span className="text-sm font-medium text-foreground">
                   ₹
-                  {(item.price * item.quantity).toFixed(2)}
+                  {lineTotal(item.price, item.quantity).toFixed(2)}
                 </span>
               </div>)}
             </div>
