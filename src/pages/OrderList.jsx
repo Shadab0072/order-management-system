@@ -46,12 +46,13 @@ const priorityDot = {
   high: "bg-warning",
   urgent: "bg-destructive"
 };
-const filterDateTriggerClass = "flex min-w-0 flex-1 items-center justify-between gap-1 px-2 sm:px-3 text-left text-sm outline-none transition-colors hover:bg-muted/20";
+const filterDateTriggerClass =
+  "flex min-w-0 flex-1 items-center justify-between gap-1 px-2 text-left text-xs sm:text-sm outline-none transition-colors hover:bg-muted/20";
 function OrderListFilterDate({ label, value, onChange, disabled }) {
   return (
     <div
       className={cn(
-        "flex h-9 w-full min-w-0 sm:w-auto sm:flex-none sm:min-w-[10rem] sm:max-w-[11rem] items-stretch rounded-xl border border-border bg-surface-2 overflow-hidden",
+        "flex h-8 w-full min-w-0 sm:h-9 sm:w-auto sm:flex-none sm:min-w-[7rem] sm:max-w-[9rem] items-stretch rounded-xl border border-border bg-surface-2 overflow-hidden",
         "focus-within:ring-2 focus-within:ring-primary/30"
       )}>
       <Popover>
@@ -156,75 +157,56 @@ function OrderList() {
   };
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in pb-10 sm:pb-12">
-      <div
-        className="glass-card p-3 sm:p-4 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
-        <div className="relative flex-1 min-w-0">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="glass-card flex flex-wrap items-center gap-2 p-3 sm:gap-2 sm:p-4">
+        <div className="relative w-full min-w-0 flex-[1_1_100%] sm:flex-1 sm:basis-[min(100%,12rem)]">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground sm:left-3 sm:h-4 sm:w-4" />
           <input
             type="text"
-            placeholder="Search by ID or customer..."
+            placeholder="Search ID or customer..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-9 pl-9 pr-4 rounded-xl bg-surface-2 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            className="h-8 w-full rounded-xl border border-border bg-surface-2 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 sm:h-9 sm:pl-9 sm:pr-4"
+          />
         </div>
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:min-w-0 sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="flex w-full min-w-0 flex-[1_1_100%] gap-2 sm:w-auto sm:flex-[0_1_auto] sm:shrink-0">
           <OrderListFilterDate
             label="From"
             value={dateFrom}
             onChange={setDateFrom}
-            disabled={dateTo ? { after: endOfDay(dateTo) } : undefined} />
+            disabled={dateTo ? { after: endOfDay(dateTo) } : undefined}
+          />
           <OrderListFilterDate
             label="To"
             value={dateTo}
             onChange={setDateTo}
-            disabled={dateFrom ? { before: startOfDay(dateFrom) } : undefined} />
+            disabled={dateFrom ? { before: startOfDay(dateFrom) } : undefined}
+          />
         </div>
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:min-w-0 sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="flex w-full min-w-0 flex-[1_1_100%] gap-2 sm:w-auto sm:flex-[0_1_auto] sm:shrink-0">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="min-w-0 w-full sm:w-auto sm:min-w-[8.5rem] h-9 px-3 rounded-xl bg-surface-2 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-            <option value="all">
-              All Status
-            </option>
-            <option value="pending">
-              Pending
-            </option>
-            <option value="in_progress">
-              In Progress
-            </option>
-            <option value="completed">
-              Completed
-            </option>
-            <option value="cancelled">
-              Cancelled
-            </option>
+            className="h-8 min-w-0 flex-1 rounded-xl border border-border bg-surface-2 px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 sm:h-9 sm:min-w-[6.5rem] sm:flex-none sm:px-2.5 sm:text-sm">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="min-w-0 w-full sm:w-auto sm:min-w-[8.5rem] h-9 px-3 rounded-xl bg-surface-2 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-            <option value="all">
-              All Priority
-            </option>
-            <option value="low">
-              Low
-            </option>
-            <option value="medium">
-              Medium
-            </option>
-            <option value="high">
-              High
-            </option>
-            <option value="urgent">
-              Urgent
-            </option>
+            className="h-8 min-w-0 flex-1 rounded-xl border border-border bg-surface-2 px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 sm:h-9 sm:min-w-[6.5rem] sm:flex-none sm:px-2.5 sm:text-sm">
+            <option value="all">All Priority</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
           </select>
         </div>
         <Link
           to="/orders/new"
-          className="w-full sm:w-auto shrink-0 h-9 px-4 rounded-xl gradient-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+          className="flex h-8 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-medium text-primary-foreground gradient-primary transition-opacity hover:opacity-90 sm:h-9 sm:w-auto sm:px-3.5 sm:text-sm">
           + New Order
         </Link>
       </div>
@@ -306,23 +288,19 @@ function OrderList() {
       </div>
       <div className="glass-card overflow-hidden hidden sm:block">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-max text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th
-                  className="text-left py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="whitespace-nowrap py-2.5 pl-3 pr-2 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:py-3 sm:pl-4 sm:pr-3 sm:text-xs lg:px-5">
                   Order ID
                 </th>
-                <th
-                  className="text-left py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="whitespace-nowrap py-2.5 px-2 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:py-3 sm:px-3 sm:text-xs lg:px-5">
                   Customer
                 </th>
-                <th
-                  className="text-left py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="whitespace-nowrap py-2.5 px-2 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:py-3 sm:px-3 sm:text-xs lg:px-5">
                   Status
                 </th>
-                <th
-                  className="text-left py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">
+                <th className="whitespace-nowrap py-2.5 px-2 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:py-3 sm:px-3 sm:text-xs lg:px-5">
                   Priority
                 </th>
                 <th
@@ -334,7 +312,7 @@ function OrderList() {
                         : "descending"
                       : undefined
                   }
-                  className="text-right py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer select-none hover:text-foreground transition-colors"
+                  className="cursor-pointer select-none whitespace-nowrap py-2.5 px-2 text-right text-[10px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground sm:py-3 sm:px-3 sm:text-xs lg:px-5"
                   onClick={() => toggleSort("amount")}>
                   <span className="inline-flex w-full items-center justify-end gap-1.5">
                     Amount
@@ -358,7 +336,7 @@ function OrderList() {
                         : "descending"
                       : undefined
                   }
-                  className="text-right py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer select-none hover:text-foreground transition-colors hidden lg:table-cell"
+                  className="cursor-pointer select-none whitespace-nowrap py-2.5 px-2 text-right text-[10px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground sm:py-3 sm:px-3 sm:text-xs lg:px-5"
                   onClick={() => toggleSort("date")}>
                   <span className="inline-flex w-full items-center justify-end gap-1.5">
                     Date
@@ -373,8 +351,7 @@ function OrderList() {
                     )}
                   </span>
                 </th>
-                <th
-                  className="text-right py-3 px-4 lg:px-6 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="whitespace-nowrap py-2.5 pl-2 pr-3 text-right text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:py-3 sm:pl-3 sm:pr-4 sm:text-xs lg:px-5">
                   Actions
                 </th>
               </tr>
@@ -392,43 +369,40 @@ function OrderList() {
                   }
                 }}
                 className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer">
-                <td className="py-3 px-4 lg:px-6 font-medium text-foreground">
+                <td className="whitespace-nowrap py-2.5 pl-3 pr-2 text-sm font-medium text-foreground sm:py-3 sm:pl-4 sm:pr-3 lg:px-5">
                   {order.id}
                 </td>
-                <td className="py-3 px-4 lg:px-6">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-7 w-7 rounded-full bg-surface-2 flex items-center justify-center text-xs font-semibold text-foreground shrink-0 hidden md:flex">
+                <td className="max-w-[8rem] py-2.5 px-2 sm:max-w-[10rem] sm:py-3 sm:px-3 md:max-w-[14rem] lg:max-w-none lg:px-5">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="hidden h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[10px] font-semibold text-foreground sm:flex sm:h-7 sm:w-7 sm:text-xs">
                       {order.customer.name.split(" ").map((n) => n[0]).join("")}
                     </div>
-                    <span className="text-foreground truncate max-w-[120px] lg:max-w-none">
-                      {order.customer.name}
-                    </span>
+                    <span className="truncate text-foreground">{order.customer.name}</span>
                   </div>
                 </td>
-                <td className="py-3 px-4 lg:px-6">
+                <td className="whitespace-nowrap py-2.5 px-2 sm:py-3 sm:px-3 lg:px-5">
                   <span
-                    className={cn("px-2.5 py-1 rounded-lg text-xs font-medium capitalize", statusBg[order.status])}>
+                    className={cn(
+                      "inline-block max-w-full truncate rounded-lg px-2 py-0.5 text-[10px] font-medium capitalize sm:px-2.5 sm:py-1 sm:text-xs",
+                      statusBg[order.status]
+                    )}>
                     {order.status.replace("_", " ")}
                   </span>
                 </td>
-                <td className="py-3 px-4 lg:px-6 hidden md:table-cell">
-                  <div className="flex items-center gap-2">
-                    <div className={cn("h-2 w-2 rounded-full", priorityDot[order.priority])} />
-                    <span className="text-muted-foreground capitalize">
-                      {order.priority}
-                    </span>
+                <td className="whitespace-nowrap py-2.5 px-2 sm:py-3 sm:px-3 lg:px-5">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className={cn("h-2 w-2 shrink-0 rounded-full", priorityDot[order.priority])} />
+                    <span className="capitalize text-muted-foreground text-xs">{order.priority}</span>
                   </div>
                 </td>
-                <td className="py-3 px-4 lg:px-6 text-right font-medium text-foreground">
+                <td className="whitespace-nowrap py-2.5 px-2 text-right text-sm font-medium text-foreground sm:py-3 sm:px-3 lg:px-5">
                   ₹
                   {order.amount.toLocaleString()}
                 </td>
-                <td
-                  className="py-3 px-4 lg:px-6 text-right text-muted-foreground hidden lg:table-cell">
+                <td className="whitespace-nowrap py-2.5 px-2 text-right text-xs text-muted-foreground sm:py-3 sm:px-3 lg:px-5">
                   {new Date(order.date).toLocaleDateString()}
                 </td>
-                <td className="py-3 px-4 lg:px-6 text-right" onClick={(e) => e.stopPropagation()}>
+                <td className="py-2.5 pl-2 pr-3 text-right sm:py-3 sm:pl-3 sm:pr-4 lg:px-5" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild={true}>
                       <button
