@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useOrders } from "@/context/OrderContext";
-import { ArrowLeft, CheckCircle2, Circle, MapPin, Mail, Phone, Plus } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, MapPin, Mail, Phone, Plus, UserCog } from "lucide-react";
 import { cn } from "@/lib/cn";
 import React, { useState } from "react";
 const statusBg = {
@@ -31,6 +31,16 @@ function OrderDetails() {
     updateOrder(order.id, { notes: [...order.notes, newNote.trim()] });
     setNewNote("");
   };
+  const agent = order.agent;
+  const agentInitials = agent
+    ? (agent.initials ||
+        agent.name
+          .split(/\s+/)
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase())
+    : "";
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <div className="flex items-center gap-3 sm:gap-4">
@@ -101,49 +111,87 @@ function OrderDetails() {
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="glass-card p-4 sm:p-6 space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">
-            Customer Info
-          </h3>
-          <div className="flex items-center gap-3">
-            <div
-              className="h-10 w-10 rounded-full bg-surface-2 flex items-center justify-center text-sm font-semibold text-foreground shrink-0">
-              {order.customer.name.split(" ").map((n) => n[0]).join("")}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="glass-card p-4 sm:p-6 space-y-4">
+            <h3 className="text-sm font-semibold text-foreground">
+              Customer Info
+            </h3>
+            <div className="flex items-center gap-3">
+              <div
+                className="h-10 w-10 rounded-full bg-surface-2 flex items-center justify-center text-sm font-semibold text-foreground shrink-0">
+                {order.customer.name.split(" ").map((n) => n[0]).join("")}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {order.customer.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Customer
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
-                {order.customer.name}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Customer
-              </p>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground min-w-0">
+                <Mail className="h-4 w-4 shrink-0" />
+                {" "}
+                <span className="truncate">
+                  {order.customer.email}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Phone className="h-4 w-4 shrink-0" />
+                {" "}
+                {order.customer.phone}
+              </div>
+              <div className="flex items-start gap-2 text-muted-foreground">
+                <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                {" "}
+                <span className="break-words">
+                  {order.customer.address}
+                  {", "}
+                  {order.customer.city}
+                  {", "}
+                  {order.customer.state}
+                  {" "}
+                  {order.customer.zip}
+                </span>
+              </div>
             </div>
           </div>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground min-w-0">
-              <Mail className="h-4 w-4 shrink-0" />
-              {" "}
-              <span className="truncate">
-                {order.customer.email}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-4 w-4 shrink-0" />
-              {" "}
-              {order.customer.phone}
-            </div>
-            <div className="flex items-start gap-2 text-muted-foreground">
-              <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-              {" "}
-              <span className="break-words">
-                {order.customer.address}
-                {", "}
-                {order.customer.city}
-                {", "}
-                {order.customer.state}
-                {" "}
-                {order.customer.zip}
-              </span>
+          <div className="glass-card relative overflow-hidden p-4 sm:p-6">
+            <div
+              className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-primary/10 blur-2xl" />
+            <div className="relative">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground sm:gap-2.5">
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/15 text-primary">
+                  <UserCog className="h-4 w-4" />
+                </span>
+                Assigned Agent
+              </h3>
+              {agent ? <div className="mt-4 space-y-4 sm:mt-5 sm:space-y-5">
+                <div className="flex items-start gap-3 sm:gap-3.5">
+                  <div
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-primary-foreground gradient-primary shadow-md shadow-primary/15 sm:h-12 sm:w-12">
+                    {agentInitials}
+                  </div>
+                  <div className="min-w-0 space-y-1.5 pt-0.5">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {agent.name}
+                    </p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      {agent.role}
+                    </p>
+                  </div>
+                </div>
+                {agent.id && <p className="border-t border-border pt-4 text-[11px] font-mono leading-relaxed text-muted-foreground sm:pt-5">
+                  ID:
+                  {" "}
+                  {agent.id}
+                </p>}
+              </div> : <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:mt-5">
+                No agent assigned. Edit the order to assign one.
+              </p>}
             </div>
           </div>
         </div>

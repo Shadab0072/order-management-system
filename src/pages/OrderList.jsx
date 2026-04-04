@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, Eye, Edit, XCircle, MoreHorizontal } from "lucide-react";
 import { useOrders } from "@/context/OrderContext";
 import { cn } from "@/lib/cn";
@@ -16,6 +16,7 @@ const priorityDot = {
   urgent: "bg-destructive"
 };
 function OrderList() {
+  const navigate = useNavigate();
   const { orders, cancelOrder } = useOrders();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -108,13 +109,22 @@ function OrderList() {
         </Link>
       </div>
       <div className="sm:hidden space-y-2">
-        {filtered.map((order) => <div key={order.id} className="glass-card p-4">
+        {filtered.map((order) => <div
+          key={order.id}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate(`/orders/${order.id}`)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate(`/orders/${order.id}`);
+            }
+          }}
+          className="glass-card p-4 cursor-pointer hover:bg-muted/20 transition-colors">
           <div className="flex items-center justify-between mb-2">
-            <Link
-              to={`/orders/${order.id}`}
-              className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+            <span className="text-sm font-semibold text-foreground">
               {order.id}
-            </Link>
+            </span>
             <div className="flex items-center gap-2">
               <span
                 className={cn("px-2 py-0.5 rounded-md text-[10px] font-medium capitalize", statusBg[order.status])}>
@@ -144,7 +154,9 @@ function OrderList() {
             </span>
           </div>
           <div
-            className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+            className="flex items-center justify-between mt-2 pt-2 border-t border-border"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}>
             <span className="text-[11px] text-muted-foreground">
               {new Date(order.date).toLocaleDateString()}
             </span>
@@ -160,6 +172,7 @@ function OrderList() {
                 <Edit className="h-3.5 w-3.5 text-muted-foreground" />
               </Link>
               {order.status !== "cancelled" && <button
+                type="button"
                 onClick={() => cancelOrder(order.id)}
                 className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors">
                 <XCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
@@ -213,7 +226,16 @@ function OrderList() {
             <tbody>
               {filtered.map((order) => <tr
                 key={order.id}
-                className="border-b border-border hover:bg-muted/30 transition-colors">
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`/orders/${order.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/orders/${order.id}`);
+                  }
+                }}
+                className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer">
                 <td className="py-3 px-4 lg:px-6 font-medium text-foreground">
                   {order.id}
                 </td>
@@ -250,8 +272,11 @@ function OrderList() {
                   className="py-3 px-4 lg:px-6 text-right text-muted-foreground hidden lg:table-cell">
                   {new Date(order.date).toLocaleDateString()}
                 </td>
-                <td className="py-3 px-4 lg:px-6 text-right relative">
+                <td
+                  className="py-3 px-4 lg:px-6 text-right relative"
+                  onClick={(e) => e.stopPropagation()}>
                   <button
+                    type="button"
                     onClick={() => setActionMenu(actionMenu === order.id ? null : order.id)}
                     className="p-1.5 rounded-lg hover:bg-muted transition-colors">
                     <MoreHorizontal className="h-4 w-4 text-muted-foreground" />

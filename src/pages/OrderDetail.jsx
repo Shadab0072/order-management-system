@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, User, Phone, Mail, MapPin, Package,
-  UserCheck, FileText, CheckCircle2, Circle, Clock, Pencil,
+  UserCog, Hash, FileText, CheckCircle2, Circle, Clock, Pencil,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { useApp } from '../context/AppContext'
@@ -169,6 +169,22 @@ const OrderDetail = () => {
   const status = statusConfig[order.status]
   const priority = priorityConfig[order.priority]
 
+  const agentObj = order.agent && typeof order.agent === 'object' ? order.agent : null
+  const legacyAgentName = typeof order.assignedAgent === 'string' ? order.assignedAgent.trim() : ''
+  const agentDisplayName = agentObj?.name || legacyAgentName
+  const agentDisplayRole = agentObj?.role || 'Support Agent'
+  const agentDisplayInitials =
+    agentObj?.initials ||
+    (agentDisplayName
+      ? agentDisplayName
+          .split(/\s+/)
+          .map((w) => w[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase()
+      : '')
+  const agentDisplayId = agentObj?.id
+
   return (
     <div className="space-y-5 max-w-6xl mx-auto">
 
@@ -231,7 +247,7 @@ const OrderDetail = () => {
         </div>
 
         {/* Col 3: Customer + Agent */}
-        <div className="space-y-5">
+        <div className="space-y-4 sm:space-y-5 lg:space-y-6">
           <Card title="Customer" icon={User} isDark={isDark}>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -251,19 +267,34 @@ const OrderDetail = () => {
             </div>
           </Card>
 
-          {order.assignedAgent && (
-            <Card title="Assigned Agent" icon={UserCheck} isDark={isDark}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                  {order.assignedAgent.charAt(0)}
+          <Card title="Assigned Agent" icon={UserCog} isDark={isDark}>
+            {agentDisplayName ? (
+              <div className="space-y-5 sm:space-y-6">
+                <div className="flex items-start gap-3 sm:gap-3.5">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 sm:h-12 sm:w-12">
+                    {agentDisplayInitials}
+                  </div>
+                  <div className="min-w-0 space-y-1.5 pt-0.5">
+                    <p className={`truncate text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {agentDisplayName}
+                    </p>
+                    <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {agentDisplayRole}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{order.assignedAgent}</p>
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Support Agent</p>
-                </div>
+                {agentDisplayId ? (
+                  <div className={`border-t pt-4 sm:pt-5 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
+                    <InfoRow icon={Hash} label="Agent ID" value={agentDisplayId} isDark={isDark} />
+                  </div>
+                ) : null}
               </div>
-            </Card>
-          )}
+            ) : (
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                No agent assigned. Edit the order to assign one.
+              </p>
+            )}
+          </Card>
         </div>
 
       </div>

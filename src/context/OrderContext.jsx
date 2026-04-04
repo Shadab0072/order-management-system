@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 const OrderContext = createContext(void 0);
+const DUMMY_AGENTS = [
+  { id: "agent-1", name: "Priya Sharma", role: "Account Executive", initials: "PS" },
+  { id: "agent-2", name: "Marcus Cole", role: "Fulfillment Lead", initials: "MC" },
+  { id: "agent-3", name: "Elena Vogt", role: "Support Specialist", initials: "EV" },
+  { id: "agent-4", name: "James Okonkwo", role: "Regional Manager", initials: "JO" },
+  { id: "agent-5", name: "Sofia Lindström", role: "VIP Relations", initials: "SL" },
+  { id: "agent-6", name: "Daniel Park", role: "Operations", initials: "DP" }
+];
 const defaultTimeline = () => [
   { id: "placed", label: "Placed", completed: true, date: ((new Date())).toISOString() },
   { id: "processing", label: "Processing", completed: false },
@@ -46,7 +54,7 @@ function generateSeedOrders() {
         s.date = date;
       });
     }
-    return { id: `ORD-${String(1001 + i)}`, customer, status, priority: priorities[i], items, amount: Math.round(amount * 100) / 100, date, timeline, notes: [] };
+    return { id: `ORD-${String(1001 + i)}`, customer, status, priority: priorities[i], items, amount: Math.round(amount * 100) / 100, date, timeline, notes: [], agent: DUMMY_AGENTS[i % DUMMY_AGENTS.length] };
   });
 }
 function generateSeedNotifications() {
@@ -122,6 +130,7 @@ const useOrders = () => {
   return ctx;
 };
 export {
+  DUMMY_AGENTS,
   OrderProvider,
   useOrders
 };

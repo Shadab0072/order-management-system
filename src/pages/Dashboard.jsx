@@ -11,7 +11,7 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { useOrders } from "@/context/OrderContext";
 import { cn } from "@/lib/cn";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 function ThemedTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
   const items = payload.filter((p) => p && p.value != null);
@@ -71,6 +71,7 @@ function shareOfTotal(count, total) {
   return Math.round((count / total) * 100);
 }
 function Dashboard() {
+  const navigate = useNavigate();
   const { orders } = useOrders();
   const stats = useMemo(() => {
     const total = orders.length;
@@ -286,13 +287,18 @@ function Dashboard() {
             <tbody>
               {recentOrders.map((order) => <tr
                 key={order.id}
-                className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="py-3 px-4 sm:px-6">
-                  <Link
-                    to={`/orders/${order.id}`}
-                    className="font-medium text-foreground hover:text-primary transition-colors">
-                    {order.id}
-                  </Link>
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`/orders/${order.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/orders/${order.id}`);
+                  }
+                }}
+                className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer">
+                <td className="py-3 px-4 sm:px-6 font-medium text-foreground">
+                  {order.id}
                 </td>
                 <td className="py-3 px-4 sm:px-6">
                   <div className="flex items-center gap-2">

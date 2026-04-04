@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useOrders } from "@/context/OrderContext";
-import { Plus, Trash2, ArrowLeft, ArrowRight, Check, User, ShoppingCart, ClipboardList, CalendarIcon } from "lucide-react";
+import { DUMMY_AGENTS, useOrders } from "@/context/OrderContext";
+import { Plus, Trash2, ArrowLeft, ArrowRight, Check, User, ShoppingCart, ClipboardList, CalendarIcon, UserCog } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn";
 const STEPS = [
   { label: "Customer Info", icon: User },
   { label: "Order Items", icon: ShoppingCart },
+  { label: "Assign Agent", icon: UserCog },
   { label: "Review", icon: ClipboardList }
 ];
 function OrderForm() {
@@ -32,8 +33,10 @@ function OrderForm() {
   const [items, setItems] = useState(existing?.items || [
     { id: "1", name: "", quantity: 1, price: "" }
   ]);
+  const [agentId, setAgentId] = useState(existing?.agent?.id || "");
   const lineTotal = (price, qty) => (Number(price) || 0) * qty;
   const total = items.reduce((s, i) => s + lineTotal(i.price, i.quantity), 0);
+  const selectedAgent = DUMMY_AGENTS.find((a) => a.id === agentId);
   const addItem = () => {
     setItems([...items, { id: String(Date.now()), name: "", quantity: 1, price: "" }]);
   };
@@ -76,6 +79,7 @@ function OrderForm() {
   const canNext = () => {
     if (step === 0) return true;
     if (step === 1) return items.every((i) => !!i.name && i.quantity > 0);
+    if (step === 2) return !!agentId;
     return true;
   };
   const handleNext = () => {
@@ -89,15 +93,17 @@ function OrderForm() {
   const handleSubmit = () => {
     const errors = validateCustomer();
     setCustomerErrors(errors);
-    if (Object.keys(errors).length > 0 || items.some((i) => !i.name)) return;
+    if (Object.keys(errors).length > 0 || items.some((i) => !i.name) || !agentId) return;
+    const agent = DUMMY_AGENTS.find((a) => a.id === agentId);
+    if (!agent) return;
     const itemsToSave = items.map((i) => ({ ...i, price: Number(i.price) || 0 }));
     const amount = Math.round(
       itemsToSave.reduce((s, i) => s + i.price * i.quantity, 0) * 100
     ) / 100;
     if (existing) {
-      updateOrder(existing.id, { customer, priority, items: itemsToSave, amount });
+      updateOrder(existing.id, { customer, priority, items: itemsToSave, amount, agent });
     } else {
-      addOrder({ customer, priority, items: itemsToSave, amount, status: "pending", notes: [] });
+      addOrder({ customer, priority, items: itemsToSave, amount, status: "pending", notes: [], agent });
     }
     navigate("/orders");
   };
@@ -437,7 +443,67 @@ function OrderForm() {
             </div>
           </div>
         </div>}
-        {step === 2 && <div className="space-y-4 animate-fade-in">
+        {step === 2 && <div className="glass-card p-4 sm:p-6 animate-fade-in overflow-hidden relative">
+          <div
+            className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+          <div
+            className="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+          <div className="relative">
+            <div className="flex items-start gap-3 mb-5">
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary border border-primary/25">
+                <UserCog className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">
+                  Assign an agent
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  Choose who owns this order for follow-ups, fulfillment, and customer contact.
+                </p>
+              </div>
+            </div>
+            <label className="text-xs text-muted-foreground mb-1.5 block">
+              Agent *
+            </label>
+            <select
+              value={agentId}
+              onChange={(e) => setAgentId(e.target.value)}
+              className={cn(
+                inputClass,
+                !agentId && "text-muted-foreground"
+              )}>
+              <option value="">
+                Select an agent…
+              </option>
+              {DUMMY_AGENTS.map((a) => <option key={a.id} value={a.id}>
+                {a.name}
+                {" — "}
+                {a.role}
+              </option>)}
+            </select>
+            {selectedAgent && <div
+              className="mt-5 flex items-center gap-4 rounded-xl border border-border bg-surface-2/80 p-4 ring-1 ring-primary/15">
+              <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl gradient-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20">
+                {selectedAgent.initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground truncate">
+                  {selectedAgent.name}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {selectedAgent.role}
+                </p>
+              </div>
+              <span
+                className="hidden sm:inline-flex shrink-0 rounded-lg bg-primary/10 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-primary border border-primary/20">
+                Assigned
+              </span>
+            </div>}
+          </div>
+        </div>}
+        {step === 3 && <div className="space-y-4 animate-fade-in">
           <div className="glass-card p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-foreground">
@@ -510,6 +576,33 @@ function OrderForm() {
           <div className="glass-card p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-foreground">
+                Assigned agent
+              </h3>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="text-xs text-primary hover:underline">
+                Edit
+              </button>
+            </div>
+            {selectedAgent && <div className="flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gradient-primary text-xs font-bold text-primary-foreground">
+                {selectedAgent.initials}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground">
+                  {selectedAgent.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedAgent.role}
+                </p>
+              </div>
+            </div>}
+          </div>
+          <div className="glass-card p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-foreground">
                 Items (
                 {items.length}
                 )
@@ -562,7 +655,7 @@ function OrderForm() {
           <ArrowLeft className="h-4 w-4" />
           {step === 0 ? "Cancel" : "Back"}
         </button>
-        {step < 2 ? <button
+        {step < 3 ? <button
           type="button"
           onClick={handleNext}
           disabled={!canNext()}
