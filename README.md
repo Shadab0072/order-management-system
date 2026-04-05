@@ -50,6 +50,7 @@ order-management/
 ├── tailwind.config.js       # Tailwind CSS configuration
 ├── postcss.config.js        # PostCSS setup
 ├── eslint.config.js         # Linting rules
+├── vitest.config.js         # Unit testing setup
 ├── components.json          # shadcn/ui configuration
 ├── package.json             # Dependencies & scripts
 └── README.md                # Project documentation
