@@ -1,59 +1,85 @@
+# 🚀 OrderFlow — Order Management System
+
+> A modern **Order Management Dashboard** built with React, Vite, Tailwind CSS, and Kanban-based workflow management.
+
+🌐 **Live Demo:**  
+👉 https://oms-orderflow-shadab.netlify.app/
+
+---
+
+## ✨ Features
+
+- 📊 Interactive Dashboard with real-time stats  
+- 📦 Order Management (create, track, update)  
+- 🧩 Kanban Board (drag & drop workflow)  
+- 🔔 Notifications system  
+- 🌙 Dark UI (modern SaaS design)  
+- ⚡ Fast performance with Vite  
+- 📡 Offline support page  
+- 🚫 Custom 404 page  
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend:** React + Vite  
+- **Styling:** Tailwind CSS  
+- **UI Components:** shadcn/ui  
+- **State Management:** Context API  
+- **Routing:** React Router  
+- **Icons:** Lucide / Custom SVG  
+
+---
+
+## 📂 Project Structure
+
+```
 order-management/
-├── public/                  # Static assets (favicon, robots.txt, SPA redirects)
-│
+├── public/
 ├── src/
-│   ├── main.jsx             # Application entry point
-│   ├── App.jsx              # Routing, providers, lazy loading, offline handling
-│   ├── index.css            # Global styles (Tailwind CSS)
-│
-│   ├── assets/              # Static images, SVGs, icons
-│
-│   ├── pages/               # Application screens/pages
-│   │   ├── Dashboard
-│   │   ├── Orders
-│   │   ├── Kanban
-│   │   ├── Notifications
-│   │   ├── NotFound (404)
-│   │   └── Offline
-│
+│   ├── main.jsx
+│   ├── App.jsx
+│   ├── index.css
+│   ├── assets/
+│   ├── pages/
 │   ├── components/
-│   │   ├── layout/          # Layout components (Sidebar, Topbar, AppLayout)
-│   │   ├── kanban/          # Kanban board (columns, cards, drag-drop)
-│   │   ├── skeleton/        # Loading placeholders (skeleton UI)
-│   │   └── ui/              # Reusable UI components (shadcn-style)
-│
-│   ├── context/             # Global state management
-│   │   ├── OrderContext     # Orders & notifications logic
-│   │   ├── ThemeContext     # Theme handling (dark/light)
-│   │   └── AppContext       # Legacy/shared context
-│
-│   ├── hooks/               # Custom React hooks
-│   │   ├── useOnlineStatus
-│   │   ├── useMobile
-│   │   └── useToast
-│
-│   ├── constants/           # Static config values
-│   │   ├── status.js        # Status labels,Priority types,Filters,Color mappings
-│      
-│ 
-│
-│   ├── utils/               # Helper functions
-│   │   ├── Formatters
-│   │   └── Order utilities
-│
-│
-│   └── lib/                 # Core utilities
-│       └── cn() helper & UI helpers
-│
-├── index.html               # Root HTML template
-├── vite.config.js           # Vite configuration (@ alias → src)
-├── tailwind.config.js       # Tailwind CSS configuration
-├── postcss.config.js        # PostCSS setup
-├── eslint.config.js         # Linting rules
-├── vitest.config.js         # Unit testing setup
-├── components.json          # shadcn/ui configuration
-├── package.json             # Dependencies & scripts
-└── README.md                # Project documentation
+│   ├── context/
+│   ├── hooks/
+│   ├── constants/
+│   ├── utils/
+│   └── lib/
+├── index.html
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+├── eslint.config.js
+├── components.json
+├── package.json
+└── README.md
+```
 
+---
 
+## ⚙️ Getting Started
 
+```bash
+git clone https://github.com/your-username/order-management.git
+cd order-management
+npm install
+npm run dev
+```
+
+---
+
+## 🚀 Build
+
+```bash
+npm run build
+```
+
+---
+
+## 🙌 Author
+
+**Shadab**  
+🌐 https://oms-orderflow-shadab.netlify.app/
