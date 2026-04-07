@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { OrderProvider } from "@/context/OrderContext";
@@ -25,7 +24,6 @@ const KanbanBoard = lazy(() => import("@/pages/KanbanBoard"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   const online = useOnlineStatus();
@@ -109,14 +107,12 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
     <ThemeProvider>
         <Sonner />
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
     </ThemeProvider>
-  </QueryClientProvider>
 );
 
 export default App;
